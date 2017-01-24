@@ -16,6 +16,8 @@ android {
         enabled = true
     }
 
+    useLibrary 'org.apache.http.legacy'
+
     signingConfigs {
 
         debug {
