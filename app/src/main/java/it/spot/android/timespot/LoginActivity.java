@@ -17,20 +17,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import it.spot.android.timespot.api.AuthService;
+import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.request.AuthRequest;
 import it.spot.android.timespot.databinding.ActivityLoginBinding;
+import it.spot.android.timespot.domain.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author a.rinaldi
@@ -75,31 +69,29 @@ public class LoginActivity
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == REQUEST_CODE_SIGN_IN) {
-           final GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            final GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
                 Snackbar.make(mBinding.getRoot(), "Welcome " + result.getSignInAccount().getIdToken(), Snackbar.LENGTH_LONG).show();
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        HttpClient httpClient = new DefaultHttpClient();
-                        HttpPost httpPost = new HttpPost("http://192.168.100.71:9000/api/session/google/validate");
-                        try {
-                            List nameValuePairs = new ArrayList(1);
-                            nameValuePairs.add(new BasicNameValuePair("id_token", result.getSignInAccount().getIdToken()));
-                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                TimeEndpoint.getInstance(getApplicationContext())
+                        .create(AuthService.class)
+                        .auth(new AuthRequest().setId_token(result.getSignInAccount().getIdToken()))
+                        .enqueue(new Callback<User>() {
 
-                            HttpResponse response = httpClient.execute(httpPost);
-                            int statusCode = response.getStatusLine().getStatusCode();
-                            final String responseBody = EntityUtils.toString(response.getEntity());
-                            Log.i("LOGINACTIVITY", "Signed in as: " + responseBody);
-                        } catch (ClientProtocolException e) {
-//                    Log.e(TAG, "Error sending ID token to backend.", e);
-                        } catch (IOException e) {
-//                    Log.e(TAG, "Error sending ID token to backend.", e);
-                        }
-                    }
-                }).start();
+                            @Override
+                            public void onResponse(Call<User> call, Response<User> response) {
+                                if (response.isSuccessful()) {
+                                    Log.e("LOGINACTIVITY", "success");
+                                } else {
+                                    Log.e("LOGINACTIVITY", "not success " + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<User> call, Throwable t) {
+                                Log.e("LOGINACTIVITY", "failure " + t.getMessage());
+                            }
+                        });
             }
         }
     }
