@@ -3,12 +3,18 @@ package it.spot.android.timespot.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * @author a.rinaldi
  */
 public class User
+        extends RealmObject
         implements Parcelable {
 
+    @PrimaryKey
+    private String _id;
     private String name;
     private String email;
     private String hashedPassword;
@@ -25,6 +31,7 @@ public class User
     }
 
     protected User(Parcel in) {
+        _id = in.readString();
         name = in.readString();
         email = in.readString();
         hashedPassword = in.readString();
@@ -38,6 +45,15 @@ public class User
     // endregion
 
     // region Public methods
+
+    public String get_id() {
+        return _id;
+    }
+
+    public User set_id(String _id) {
+        this._id = _id;
+        return this;
+    }
 
     public String getName() {
         return name;
@@ -122,6 +138,7 @@ public class User
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_id);
         dest.writeString(name);
         dest.writeString(email);
         dest.writeString(hashedPassword);

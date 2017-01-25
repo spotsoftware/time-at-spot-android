@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 
+import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+
 public class SplashActivity
         extends AppCompatActivity
         implements Runnable {
@@ -38,8 +40,13 @@ public class SplashActivity
 
     @Override
     public void run() {
-        // TODO - check login status
-        LoginActivity.start(this);
+        if (TimeAuthenticatorHelper.getAccount(this) != null) {
+            HomeActivity.start(this);
+
+        } else {
+            // TODO - check login status
+            LoginActivity.start(this);
+        }
     }
 
     // endregion

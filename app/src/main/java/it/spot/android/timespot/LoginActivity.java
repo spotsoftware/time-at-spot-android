@@ -1,5 +1,6 @@
 package it.spot.android.timespot;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -20,6 +21,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import it.spot.android.timespot.api.AuthService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.request.AuthRequest;
+import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.ActivityLoginBinding;
 import it.spot.android.timespot.domain.User;
 import retrofit2.Call;
@@ -81,7 +83,10 @@ public class LoginActivity
                             @Override
                             public void onResponse(Call<User> call, Response<User> response) {
                                 if (response.isSuccessful()) {
-                                    Log.e("LOGINACTIVITY", "success");
+                                    Account account = TimeAuthenticatorHelper.addAccount(getApplicationContext(), response.body());
+                                    TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
+                                    Log.e("LOGINACTIVITY", "success " + response.headers().get("Set-Cookie"));
+
                                 } else {
                                     Log.e("LOGINACTIVITY", "not success " + response.message());
                                 }
