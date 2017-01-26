@@ -47,6 +47,8 @@ public class SplashActivity
             // TODO - check login status
             LoginActivity.start(this);
         }
+
+        finish();
     }
 
     // endregion

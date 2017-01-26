@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">time@spot</string>
     <string name="logout">Logout</string>
+    <string name="work_entries">Versamenti</string>
+    <string name="projects_status">Stato progetti</string>
+
+    <!-- Useless but needed -->
+    <string name="drawer_open">Apri</string>
+    <string name="drawer_close">Chiudi</string>
 </resources>

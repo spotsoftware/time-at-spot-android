@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
 
-        <!--<item-->
-            <!--android:id="@+id/inbox"-->
-            <!--android:checked="false"-->
-            <!--android:icon="@drawable/ic_inbox_black"-->
-            <!--android:title="@string/inbox_string" />-->
+        <item
+            android:id="@+id/work_entries"
+            android:checked="false"
+            android:icon="@drawable/ic_add"
+            android:title="@string/work_entries" />
 
-        <!--<item-->
-            <!--android:id="@+id/starred"-->
-            <!--android:checked="false"-->
-            <!--android:icon="@android:drawable/ic_"-->
-            <!--android:title="@string/starred_string" />-->
+        <item
+            android:id="@+id/projects_status"
+            android:checked="false"
+            android:icon="@drawable/ic_add"
+            android:title="@string/projects_status" />
     </group>
 </menu>

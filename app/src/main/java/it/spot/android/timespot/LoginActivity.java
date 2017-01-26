@@ -85,7 +85,8 @@ public class LoginActivity
                                 if (response.isSuccessful()) {
                                     Account account = TimeAuthenticatorHelper.addAccount(getApplicationContext(), response.body());
                                     TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
-                                    Log.e("LOGINACTIVITY", "success " + response.headers().get("Set-Cookie"));
+                                    HomeActivity.start(LoginActivity.this);
+                                    finish();
 
                                 } else {
                                     Log.e("LOGINACTIVITY", "not success " + response.message());

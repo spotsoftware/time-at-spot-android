@@ -4,24 +4,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
-import it.spot.android.timespot.api.AuthService;
-import it.spot.android.timespot.api.TimeEndpoint;
-import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author a.rinaldi
  */
 public class HomeActivity
         extends AppCompatActivity
-        implements View.OnClickListener {
+        implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static void start(Activity activity) {
         Intent intent = new Intent(activity, HomeActivity.class);
@@ -36,6 +34,27 @@ public class HomeActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        mBinding.navigation.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            @Override
+            public void onDrawerClosed(View v) {
+                super.onDrawerClosed(v);
+            }
+
+            @Override
+            public void onDrawerOpened(View v) {
+                super.onDrawerOpened(v);
+            }
+        };
+        mBinding.drawerLayout.addDrawerListener(drawerToggle);
+
+        drawerToggle.syncState();
     }
 
     // endregion
@@ -66,6 +85,30 @@ public class HomeActivity
 //                        }
 //                    });
 //        }
+    }
+
+    // endregion
+
+    // region NavigationView.OnNavigationItemSelectedListener implementation
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        item.setChecked(!item.isChecked());
+        mBinding.drawerLayout.closeDrawers();
+
+        switch (item.getItemId()) {
+            case R.id.work_entries:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(mBinding.content.getId(), new WorkEntriesFragment())
+                        .commit();
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
     }
 
     // endregion
