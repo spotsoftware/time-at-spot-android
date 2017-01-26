@@ -17,6 +17,8 @@ public class WorkEntry
     private String _id;
     private boolean active;
     private boolean deleted;
+    private String description;
+    private double amount;
 
     // region Construction
 
@@ -28,6 +30,8 @@ public class WorkEntry
         _id = in.readString();
         active = in.readByte() != 0;
         deleted = in.readByte() != 0;
+        description = in.readString();
+        amount = in.readDouble();
     }
 
     // endregion
@@ -61,6 +65,24 @@ public class WorkEntry
         return this;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public WorkEntry setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public WorkEntry setAmount(double amount) {
+        this.amount = amount;
+        return this;
+    }
+
     // endregion
 
     // region Parcelable implementation
@@ -75,6 +97,8 @@ public class WorkEntry
         dest.writeString(_id);
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeByte((byte) (deleted ? 1 : 0));
+        dest.writeString(description);
+        dest.writeDouble(amount);
     }
 
     public static final Creator<WorkEntry> CREATOR = new Creator<WorkEntry>() {

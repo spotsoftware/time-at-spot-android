@@ -10,15 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.List;
-
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntriesRequest;
 import it.spot.android.timespot.api.response.WorkEntriesResponse;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.FragmentWorkEntriesBinding;
-import it.spot.android.timespot.domain.WorkEntry;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,7 +37,7 @@ public class WorkEntriesFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = FragmentWorkEntriesBinding.inflate(inflater, container, false);
 
-        mAdapter = new WorkEntriesAdapter();
+        mAdapter = new WorkEntriesAdapter(getActivity());
         mBinding.list.setLayoutManager(new LinearLayoutManager(getActivity()));
         mBinding.list.setHasFixedSize(true);
         mBinding.list.setAdapter(mAdapter);
@@ -61,6 +58,7 @@ public class WorkEntriesFragment
                         if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), "success " + response.body().getItems().size(), Toast.LENGTH_LONG).show();
                             Log.e("WORKENTRIE", "success " + response.body().getItems().size());
+                            mAdapter.setWorkEntries(response.body().getItems());
 
                         } else {
                             Log.e("WORKENTRIE", "error");
