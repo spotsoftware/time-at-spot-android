@@ -24,6 +24,7 @@ import it.spot.android.timespot.api.request.AuthRequest;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.ActivityLoginBinding;
 import it.spot.android.timespot.domain.User;
+import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,6 +86,7 @@ public class LoginActivity
                                 if (response.isSuccessful()) {
                                     Account account = TimeAuthenticatorHelper.addAccount(getApplicationContext(), response.body());
                                     TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
+                                    Storage.init(LoginActivity.this).setLoggedUser(response.body());
                                     HomeActivity.start(LoginActivity.this);
                                     finish();
 

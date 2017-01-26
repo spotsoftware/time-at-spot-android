@@ -40,7 +40,9 @@ public class Storage
 
     @Override
     public void setLoggedUser(User user) {
-
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(user);
+        mRealm.close();
     }
 
     // endregion

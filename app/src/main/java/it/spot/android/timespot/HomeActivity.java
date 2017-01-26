@@ -54,6 +54,8 @@ public class HomeActivity
         };
         mBinding.drawerLayout.addDrawerListener(drawerToggle);
 
+        onNavigationItemSelected(mBinding.navigation.getMenu().getItem(0));
+
         drawerToggle.syncState();
     }
 
