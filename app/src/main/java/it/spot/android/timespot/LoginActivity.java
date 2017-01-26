@@ -1,16 +1,21 @@
 package it.spot.android.timespot;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -37,6 +42,7 @@ public class LoginActivity
         implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final int REQUEST_CODE_SIGN_IN = 0;
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     public static void start(Activity activity) {
         Intent intent = new Intent(activity, LoginActivity.class);
@@ -85,10 +91,15 @@ public class LoginActivity
                             public void onResponse(Call<User> call, Response<User> response) {
                                 if (response.isSuccessful()) {
                                     Account account = TimeAuthenticatorHelper.addAccount(getApplicationContext(), response.body());
-                                    TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
-                                    Storage.init(LoginActivity.this).setLoggedUser(response.body());
-                                    HomeActivity.start(LoginActivity.this);
-                                    finish();
+                                    if(account != null) {
+                                        TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
+                                        Storage.init(LoginActivity.this).setLoggedUser(response.body());
+                                        HomeActivity.start(LoginActivity.this);
+                                        finish();
+
+                                    } else {
+                                        Log.e("LOGINACTIVITY", "account is null");
+                                    }
 
                                 } else {
                                     Log.e("LOGINACTIVITY", "not success " + response.message());
@@ -104,13 +115,25 @@ public class LoginActivity
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                attemptLogin();
+            }
+
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     // endregion
 
     // region GoogleApiClient.OnConnectionFailedListener implementation
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_LONG).show();
     }
 
     // endregion
@@ -120,9 +143,22 @@ public class LoginActivity
     @Override
     public void onClick(View v) {
         if (v.equals(mBinding.googleLoginButton)) {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, PERMISSION_REQUEST_CODE);
+
+            } else {
+                attemptLogin();
+            }
         }
+    }
+
+    // endregion
+
+    // region Private methods
+
+    private void attemptLogin() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
     }
 
     // endregion

@@ -49,8 +49,6 @@ public class WorkEntriesFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-//        User user = Storage.init(getActivity()).getLoggedUser();
-
         TimeEndpoint.getInstance(getActivity())
                 .create(WorkEntryService.class)
                 .get("54e3061b9f11ec0b0035107e", 1, new WorkEntriesRequest()
