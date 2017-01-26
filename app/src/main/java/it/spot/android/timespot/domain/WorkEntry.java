@@ -18,7 +18,14 @@ public class WorkEntry
     private boolean active;
     private boolean deleted;
     private String description;
+    private String performedAt;
     private double amount;
+
+    // linked models
+    private Client _client;
+    private Project _project;
+    private User _performedBy;
+    private Organization _organization;
 
     // region Construction
 
@@ -31,7 +38,12 @@ public class WorkEntry
         active = in.readByte() != 0;
         deleted = in.readByte() != 0;
         description = in.readString();
+        performedAt = in.readString();
         amount = in.readDouble();
+        _performedBy = in.readParcelable(User.class.getClassLoader());
+        _client = in.readParcelable(Client.class.getClassLoader());
+        _project = in.readParcelable(Project.class.getClassLoader());
+        _organization = in.readParcelable(Organization.class.getClassLoader());
     }
 
     // endregion
@@ -74,12 +86,57 @@ public class WorkEntry
         return this;
     }
 
+    public String getPerformedAt() {
+        return performedAt;
+    }
+
+    public WorkEntry setPerformedAt(String performedAt) {
+        this.performedAt = performedAt;
+        return this;
+    }
+
     public double getAmount() {
         return amount;
     }
 
     public WorkEntry setAmount(double amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public Client get_client() {
+        return _client;
+    }
+
+    public WorkEntry set_client(Client _client) {
+        this._client = _client;
+        return this;
+    }
+
+    public User get_performedBy() {
+        return _performedBy;
+    }
+
+    public WorkEntry set_performedBy(User _performedBy) {
+        this._performedBy = _performedBy;
+        return this;
+    }
+
+    public Project get_project() {
+        return _project;
+    }
+
+    public WorkEntry set_project(Project _project) {
+        this._project = _project;
+        return this;
+    }
+
+    public Organization get_organization() {
+        return _organization;
+    }
+
+    public WorkEntry set_organization(Organization _organization) {
+        this._organization = _organization;
         return this;
     }
 
@@ -98,7 +155,12 @@ public class WorkEntry
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeByte((byte) (deleted ? 1 : 0));
         dest.writeString(description);
+        dest.writeString(performedAt);
         dest.writeDouble(amount);
+        dest.writeParcelable(_client, flags);
+        dest.writeParcelable(_project, flags);
+        dest.writeParcelable(_performedBy, flags);
+        dest.writeParcelable(_organization, flags);
     }
 
     public static final Creator<WorkEntry> CREATOR = new Creator<WorkEntry>() {
