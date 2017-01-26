@@ -4,11 +4,24 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import java.util.List;
+
+import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.WorkEntryService;
+import it.spot.android.timespot.api.request.WorkEntriesRequest;
+import it.spot.android.timespot.api.response.WorkEntriesResponse;
+import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.FragmentWorkEntriesBinding;
+import it.spot.android.timespot.domain.WorkEntry;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author a.rinaldi
@@ -33,6 +46,32 @@ public class WorkEntriesFragment
         mBinding.list.setAdapter(mAdapter);
 
         mBinding.setListener(this);
+
+//        User user = Storage.init(getActivity()).getLoggedUser();
+
+        TimeEndpoint.getInstance(getActivity())
+                .create(WorkEntryService.class)
+                .get("54e3061b9f11ec0b0035107e", 1, new WorkEntriesRequest()
+                        .setFrom("2017-01-21T23:00:00.000Z")
+                        .setTo("2017-01-28T22:59:59.999Z")
+                        .setUserId(TimeAuthenticatorHelper.getUserId(getActivity(), TimeAuthenticatorHelper.getAccount(getActivity()))))
+                .enqueue(new Callback<WorkEntriesResponse>() {
+                    @Override
+                    public void onResponse(Call<WorkEntriesResponse> call, Response<WorkEntriesResponse> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "success " + response.body().getItems().size(), Toast.LENGTH_LONG).show();
+                            Log.e("WORKENTRIE", "success " + response.body().getItems().size());
+
+                        } else {
+                            Log.e("WORKENTRIE", "error");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<WorkEntriesResponse> call, Throwable t) {
+                        Log.e("WORKENTRIE", "errorrrrr");
+                    }
+                });
 
         return mBinding.getRoot();
     }

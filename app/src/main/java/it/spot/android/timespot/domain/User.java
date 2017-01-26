@@ -3,6 +3,7 @@ package it.spot.android.timespot.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -15,14 +16,13 @@ public class User
 
     @PrimaryKey
     private String _id;
+    private boolean active;
+    private boolean deleted;
     private String name;
     private String email;
-    private String hashedPassword;
     private String provider;
-    private String salt;
-    private String deviceTokenHash;
     private String role;
-    private String _lastOrganization;
+//    private UserSettings userSettings;
 
     // region Construction
 
@@ -32,14 +32,13 @@ public class User
 
     protected User(Parcel in) {
         _id = in.readString();
+        active = in.readByte() != 0;
+        deleted = in.readByte() != 0;
         name = in.readString();
         email = in.readString();
-        hashedPassword = in.readString();
         provider = in.readString();
-        salt = in.readString();
-        deviceTokenHash = in.readString();
         role = in.readString();
-        _lastOrganization = in.readString();
+//        userSettings = in.readParcelable(UserSettings.class.getClassLoader());
     }
 
     // endregion
@@ -52,7 +51,25 @@ public class User
 
     public User set_id(String _id) {
         this._id = _id;
+        return  this;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public User setActive(boolean active) {
+        this.active = active;
         return this;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public User setDeleted(boolean deleted) {
+        this.deleted = deleted;
+        return  this;
     }
 
     public String getName() {
@@ -73,39 +90,12 @@ public class User
         return this;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public User setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-        return this;
-    }
-
     public String getProvider() {
         return provider;
     }
 
     public User setProvider(String provider) {
         this.provider = provider;
-        return this;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public User setSalt(String salt) {
-        this.salt = salt;
-        return this;
-    }
-
-    public String getDeviceTokenHash() {
-        return deviceTokenHash;
-    }
-
-    public User setDeviceTokenHash(String deviceTokenHash) {
-        this.deviceTokenHash = deviceTokenHash;
         return this;
     }
 
@@ -118,14 +108,14 @@ public class User
         return this;
     }
 
-    public String get_lastOrganization() {
-        return _lastOrganization;
-    }
-
-    public User set_lastOrganization(String _lastOrganization) {
-        this._lastOrganization = _lastOrganization;
-        return this;
-    }
+//    public UserSettings getUserSettings() {
+//        return userSettings;
+//    }
+//
+//    public User setUserSettings(UserSettings userSettings) {
+//        this.userSettings = userSettings;
+//        return this;
+//    }
 
     // endregion
 
@@ -139,14 +129,13 @@ public class User
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(_id);
+        dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeByte((byte) (deleted ? 1 : 0));
         dest.writeString(name);
         dest.writeString(email);
-        dest.writeString(hashedPassword);
         dest.writeString(provider);
-        dest.writeString(salt);
-        dest.writeString(deviceTokenHash);
         dest.writeString(role);
-        dest.writeString(_lastOrganization);
+//        dest.writeParcelable(userSettings, flags);
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {

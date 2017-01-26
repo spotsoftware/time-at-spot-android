@@ -33,7 +33,7 @@ public class TimeEndpoint {
 
                         } else {
                             return chain.proceed(chain.request().newBuilder()
-                                    .addHeader("Set-Cookie", TimeAuthenticatorHelper.getToken(context, account))
+                                    .addHeader("Cookie", TimeAuthenticatorHelper.getToken(context, account))
                                     .build());
                         }
                     }
