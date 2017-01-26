@@ -41,10 +41,10 @@ public class TimeEndpoint {
                                     .addHeader("Cookie", TimeAuthenticatorHelper.getToken(context, account))
                                     .build());
 
-//                            if (response.headers() != null && account != null) {
-//                                Log.e("TIMEENDPOINT", "updated token " + response.headers().get("Cookie"));
-//                                TimeAuthenticatorHelper.updateToken(context, account, response.headers().get("Cookie"));
-//                            }
+                            if (response.headers() != null && account != null) {
+                                Log.e("TIMEENDPOINT", "updated token " + response.headers().get("Cookie"));
+                                TimeAuthenticatorHelper.updateToken(context, account, response.headers().get("Cookie"));
+                            }
                         }
 
                         return response;
