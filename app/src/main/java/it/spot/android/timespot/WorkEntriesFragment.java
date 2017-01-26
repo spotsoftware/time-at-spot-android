@@ -1,7 +1,10 @@
 package it.spot.android.timespot;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -44,6 +47,8 @@ public class WorkEntriesFragment
 
         mBinding.setListener(this);
 
+        mBinding.addButton.setTransitionName("reveal");
+
 //        User user = Storage.init(getActivity()).getLoggedUser();
 
         TimeEndpoint.getInstance(getActivity())
@@ -80,7 +85,9 @@ public class WorkEntriesFragment
 
     @Override
     public void onClick(View v) {
-
+        Intent intent = new Intent(getActivity(), WorkEntryNewActivity.class);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), mBinding.addButton, "reveal");
+        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
     }
 
     // endregion

@@ -4,6 +4,11 @@
     <string name="work_entries">Versamenti</string>
     <string name="projects_status">Stato progetti</string>
 
+    <string name="select_date">Seleziona una data</string>
+    <string name="how_much_time">Quanto hai lavorato</string>
+    <string name="what_project">Su quale progetto</string>
+    <string name="what_did_you_do">Qualche dettaglio su cosa hai fatto</string>
+
     <!-- Useless but needed -->
     <string name="drawer_open">Apri</string>
     <string name="drawer_close">Chiudi</string>
