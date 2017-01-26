@@ -36,7 +36,6 @@ public class HomeActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
-        mBinding.setListener(this);
     }
 
     // endregion
