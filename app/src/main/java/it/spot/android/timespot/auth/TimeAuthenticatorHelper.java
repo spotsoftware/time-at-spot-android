@@ -78,7 +78,7 @@ public class TimeAuthenticatorHelper {
     public static Account getAccount(Context context, String name) {
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
             Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
 
             for (Account account : accounts) {
