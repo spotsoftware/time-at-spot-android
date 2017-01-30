@@ -21,6 +21,13 @@ android {
 
     signingConfigs {
 
+        release {
+            storeFile file("keystore/spotrelease.keystore.jks")
+            storePassword "Spot-android"
+            keyAlias "spot"
+            keyPassword "Spot-android"
+        }
+
         debug {
             storeFile file("keystore/debug.keystore")
             storePassword "android"

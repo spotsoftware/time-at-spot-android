@@ -13,12 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntriesRequest;
 import it.spot.android.timespot.api.response.WorkEntriesResponse;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.FragmentWorkEntriesBinding;
+import it.spot.android.timespot.storage.Storage;
+import it.spot.android.timespot.support.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,11 +55,15 @@ public class WorkEntriesFragment
 
 //        User user = Storage.init(getActivity()).getLoggedUser();
 
+        Calendar to = Calendar.getInstance();
+        Calendar from = Calendar.getInstance();
+        from.set(Calendar.DAY_OF_MONTH, to.get(Calendar.DAY_OF_MONTH) - 7);
+
         TimeEndpoint.getInstance(getActivity())
                 .create(WorkEntryService.class)
-                .get("54e3061b9f11ec0b0035107e", 1, new WorkEntriesRequest()
-                        .setFrom("2017-01-21T23:00:00.000Z")
-                        .setTo("2017-01-28T22:59:59.999Z")
+                .get(Storage.init(getActivity()).getCurrentOrganizationId(), 1, new WorkEntriesRequest()
+                        .setFrom(Utils.Date.formatDateInServerFormat(from))
+                        .setTo(Utils.Date.formatDateInServerFormat(to))
                         .setUserId(TimeAuthenticatorHelper.getUserId(getActivity(), TimeAuthenticatorHelper.getAccount(getActivity()))))
                 .enqueue(new Callback<WorkEntriesResponse>() {
                     @Override

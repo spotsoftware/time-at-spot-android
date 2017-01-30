@@ -2,6 +2,7 @@ package it.spot.android.timespot.api;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -42,8 +43,11 @@ public class TimeEndpoint {
                                     .build());
 
                             if (response.headers() != null && account != null) {
-                                Log.e("TIMEENDPOINT", "updated token " + response.headers().get("Cookie"));
-                                TimeAuthenticatorHelper.updateToken(context, account, response.headers().get("Cookie"));
+                                String cookie = response.headers().get("Set-Cookie");
+                                if (!TextUtils.isEmpty(cookie)) {
+                                    Log.e("TIMEENDPOINT", "updated token " + cookie);
+                                    TimeAuthenticatorHelper.updateToken(context, account, cookie);
+                                }
                             }
                         }
 

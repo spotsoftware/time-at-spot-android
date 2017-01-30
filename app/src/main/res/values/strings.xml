@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">time@spot</string>
     <string name="logout">Logout</string>
+    <string name="save">Save</string>
+
     <string name="work_entries">Versamenti</string>
     <string name="projects_status">Stato progetti</string>
 

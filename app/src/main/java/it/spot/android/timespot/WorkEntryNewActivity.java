@@ -14,13 +14,28 @@ import android.text.method.ScrollingMovementMethod;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
+import java.util.Calendar;
+
+import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.WorkEntryService;
+import it.spot.android.timespot.api.request.WorkEntryNewRequest;
+import it.spot.android.timespot.api.response.WorkEntryNewResponse;
 import it.spot.android.timespot.databinding.ActivityWorkEntryNewBinding;
+import it.spot.android.timespot.storage.IStorage;
+import it.spot.android.timespot.storage.Storage;
 import it.spot.android.timespot.support.GUIUtils;
 import it.spot.android.timespot.support.OnRevealAnimationListener;
+import it.spot.android.timespot.support.Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author a.rinaldi
@@ -65,6 +80,26 @@ public class WorkEntryNewActivity
                     });
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.menu_work_entry_new, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.save) {
+            save();
+            return true;
+
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -142,6 +177,40 @@ public class WorkEntryNewActivity
         Fade fade = new Fade();
         getWindow().setReturnTransition(fade);
         fade.setDuration(getResources().getInteger(R.integer.animation_duration));
+    }
+
+    private void save() {
+
+        IStorage storage = Storage.init(this);
+
+        WorkEntryNewRequest request = new WorkEntryNewRequest()
+                .set_client("54e306309f11ec0b003510e6")
+                .set_performedBy(storage.getLoggedUser().get_id())
+                .set_project("57a2f1a20e3c530f006f49a3")
+                .setDescription(mBinding.editDescription.getText().toString())
+                .setAmount(Float.valueOf(mBinding.editTime.getText().toString()))
+                .setPerformedAt(Utils.Date.formatDateInServerFormat(Calendar.getInstance()));
+
+        TimeEndpoint.getInstance(this)
+                .create(WorkEntryService.class)
+                .create(storage.getCurrentOrganizationId(), request)
+                .enqueue(new Callback<WorkEntryNewResponse>() {
+
+                    @Override
+                    public void onResponse(Call<WorkEntryNewResponse> call, Response<WorkEntryNewResponse> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(WorkEntryNewActivity.this, "saved - " + response.body().get_id(), Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(WorkEntryNewActivity.this, String.valueOf(response.code()) + " - " + response.message(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<WorkEntryNewResponse> call, Throwable t) {
+                        Toast.makeText(WorkEntryNewActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // endregion
