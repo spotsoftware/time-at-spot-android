@@ -1,4 +1,4 @@
-package it.spot.android.timespot;
+package it.spot.android.timespot.workentry;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,8 +52,6 @@ public class WorkEntriesFragment
         mBinding.setListener(this);
 
         mBinding.addButton.setTransitionName("reveal");
-
-//        User user = Storage.init(getActivity()).getLoggedUser();
 
         Calendar to = Calendar.getInstance();
         Calendar from = Calendar.getInstance();

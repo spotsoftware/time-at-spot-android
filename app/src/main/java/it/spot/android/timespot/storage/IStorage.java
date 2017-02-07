@@ -1,5 +1,8 @@
 package it.spot.android.timespot.storage;
 
+import java.util.List;
+
+import it.spot.android.timespot.domain.Organization;
 import it.spot.android.timespot.domain.User;
 
 /**
@@ -11,7 +14,13 @@ public interface IStorage {
 
     void setLoggedUser(User user);
 
-    String getCurrentOrganizationId() ;
+    String getCurrentOrganizationId();
 
     void setCurrentOrganizationId(String organizationId);
+
+    List<Organization> getOrganizations();
+
+    Organization getOrganizationById(String id);
+
+    void setOrganizations(List<Organization> organizations);
 }

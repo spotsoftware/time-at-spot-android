@@ -1,4 +1,4 @@
-package it.spot.android.timespot;
+package it.spot.android.timespot.workentry;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

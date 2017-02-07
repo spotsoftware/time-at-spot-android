@@ -1,4 +1,4 @@
-package it.spot.android.timespot;
+package it.spot.android.timespot.workentry;
 
 import android.annotation.TargetApi;
 import android.databinding.DataBindingUtil;
@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import it.spot.android.timespot.R;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntryNewRequest;

@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
+import it.spot.android.timespot.workentry.WorkEntriesFragment;
 
 /**
  * @author a.rinaldi
