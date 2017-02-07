@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import retrofit2.Response;
  */
 public class WorkEntriesFragment
         extends Fragment
-        implements View.OnClickListener {
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private WorkEntriesAdapter mAdapter;
     private FragmentWorkEntriesBinding mBinding;
@@ -50,8 +51,20 @@ public class WorkEntriesFragment
         mBinding.list.setAdapter(mAdapter);
 
         mBinding.setListener(this);
+        mBinding.swipeRefresh.setOnRefreshListener(this);
 
         mBinding.addButton.setTransitionName("reveal");
+
+        queryWorkEntries();
+
+        return mBinding.getRoot();
+    }
+
+    // endregion
+
+    // region Private methods
+
+    private void queryWorkEntries() {
 
         Calendar to = Calendar.getInstance();
         Calendar from = Calendar.getInstance();
@@ -70,6 +83,7 @@ public class WorkEntriesFragment
                             Toast.makeText(getActivity(), "success " + response.body().getItems().size(), Toast.LENGTH_LONG).show();
                             Log.e("WORKENTRIE", "success " + response.body().getItems().size());
                             mAdapter.setWorkEntries(response.body().getItems());
+                            mBinding.swipeRefresh.setRefreshing(false);
 
                         } else {
                             Log.e("WORKENTRIE", "error");
@@ -81,8 +95,6 @@ public class WorkEntriesFragment
                         Log.e("WORKENTRIE", "errorrrrr");
                     }
                 });
-
-        return mBinding.getRoot();
     }
 
     // endregion
@@ -94,6 +106,16 @@ public class WorkEntriesFragment
         Intent intent = new Intent(getActivity(), WorkEntryNewActivity.class);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), mBinding.addButton, "reveal");
         ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+    }
+
+    // endregion
+
+    // region SwipeRefreshLayout.OnRefreshListener implementation
+
+    @Override
+    public void onRefresh() {
+        mBinding.swipeRefresh.setRefreshing(true);
+        queryWorkEntries();
     }
 
     // endregion
