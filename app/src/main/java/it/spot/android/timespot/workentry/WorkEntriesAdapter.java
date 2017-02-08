@@ -37,7 +37,7 @@ public class WorkEntriesAdapter
     public void setWorkEntries(List<WorkEntry> entries) {
         mEntries.clear();
         mEntries.addAll(entries);
-        notifyItemRangeInserted(mEntries.size() - entries.size(), mEntries.size());
+        notifyDataSetChanged();
     }
 
     // endregion

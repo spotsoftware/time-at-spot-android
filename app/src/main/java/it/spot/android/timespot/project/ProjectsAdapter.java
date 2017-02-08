@@ -37,7 +37,7 @@ public class ProjectsAdapter
     public void setProjects(List<Project> entries) {
         mEntries.clear();
         mEntries.addAll(entries);
-        notifyItemRangeInserted(mEntries.size() - entries.size(), mEntries.size());
+        notifyDataSetChanged();
     }
 
     // endregion
