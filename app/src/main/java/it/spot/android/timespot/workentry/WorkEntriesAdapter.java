@@ -28,7 +28,6 @@ public class WorkEntriesAdapter
         super();
         mEntries = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
-        setHasStableIds(true);
     }
 
     // endregion
