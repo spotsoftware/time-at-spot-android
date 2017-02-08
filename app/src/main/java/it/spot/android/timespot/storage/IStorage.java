@@ -3,6 +3,7 @@ package it.spot.android.timespot.storage;
 import java.util.List;
 
 import it.spot.android.timespot.domain.Organization;
+import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.domain.User;
 
 /**
@@ -23,4 +24,12 @@ public interface IStorage {
     Organization getOrganizationById(String id);
 
     void setOrganizations(List<Organization> organizations);
+
+    List<Project> getProjects();
+
+    List<Project> getActiveProjects();
+
+    Project getProject(String id);
+
+    void setProjects(List<Project> projects);
 }

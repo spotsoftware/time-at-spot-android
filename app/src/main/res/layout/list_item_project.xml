@@ -5,23 +5,15 @@
         android:layout_width="match_parent"
         android:layout_height="60dp">
 
-        <View
-            android:id="@+id/horizontal_separator"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_centerVertical="true" />
-
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/horizontal_separator" />
-
-        <TextView
-            android:id="@+id/amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/horizontal_separator" />
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin" />
 
         <View
             android:layout_width="match_parent"

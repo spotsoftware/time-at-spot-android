@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
+import it.spot.android.timespot.project.ProjectsFragment;
 import it.spot.android.timespot.workentry.WorkEntriesFragment;
 
 /**
@@ -104,6 +105,12 @@ public class HomeActivity
             case R.id.work_entries:
                 getSupportFragmentManager().beginTransaction()
                         .replace(mBinding.content.getId(), new WorkEntriesFragment())
+                        .commit();
+                break;
+
+            case R.id.projects:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(mBinding.content.getId(), new ProjectsFragment())
                         .commit();
                 break;
 

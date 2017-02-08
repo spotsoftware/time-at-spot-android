@@ -1,4 +1,4 @@
-package it.spot.android.timespot.workentry;
+package it.spot.android.timespot.project;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -10,21 +10,21 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.spot.android.timespot.databinding.ListItemWorkEntryBinding;
-import it.spot.android.timespot.domain.WorkEntry;
+import it.spot.android.timespot.databinding.ListItemProjectBinding;
+import it.spot.android.timespot.domain.Project;
 
 /**
  * @author a.rinaldi
  */
-public class WorkEntriesAdapter
-        extends RecyclerView.Adapter<WorkEntriesAdapter.ViewHolder> {
+public class ProjectsAdapter
+        extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
 
     private LayoutInflater mInflater;
-    private List<WorkEntry> mEntries;
+    private List<Project> mEntries;
 
     // region Construction
 
-    public WorkEntriesAdapter(Context context) {
+    public ProjectsAdapter(Context context) {
         super();
         mEntries = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
@@ -35,7 +35,7 @@ public class WorkEntriesAdapter
 
     // region Public methods
 
-    public void setWorkEntries(List<WorkEntry> entries) {
+    public void setProjects(List<Project> entries) {
         mEntries.clear();
         mEntries.addAll(entries);
         notifyItemRangeInserted(mEntries.size() - entries.size(), mEntries.size());
@@ -46,15 +46,14 @@ public class WorkEntriesAdapter
     // region RecyclerView.Adapter implementation
 
     @Override
-    public WorkEntriesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(ListItemWorkEntryBinding.inflate(mInflater, parent, false).getRoot());
+    public ProjectsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(ListItemProjectBinding.inflate(mInflater, parent, false).getRoot());
     }
 
     @Override
-    public void onBindViewHolder(WorkEntriesAdapter.ViewHolder holder, int position) {
-        WorkEntry entry = mEntries.get(position);
-        holder.mBinding.description.setText(entry.getDescription());
-        holder.mBinding.amount.setText(String.format("Ore: %f", entry.getAmount()));
+    public void onBindViewHolder(ProjectsAdapter.ViewHolder holder, int position) {
+        Project entry = mEntries.get(position);
+        holder.mBinding.name.setText(entry.getName());
     }
 
     @Override
@@ -67,7 +66,7 @@ public class WorkEntriesAdapter
     protected static class ViewHolder
             extends RecyclerView.ViewHolder {
 
-        ListItemWorkEntryBinding mBinding;
+        ListItemProjectBinding mBinding;
 
         public ViewHolder(View itemView) {
             super(itemView);

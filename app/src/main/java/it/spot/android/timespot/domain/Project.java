@@ -15,15 +15,14 @@ public class Project
 
     @PrimaryKey
     private String _id;
-    private String _client;
-    private String _organization;
+//    private String _client;
+//    private String _organization;
     private String name;
-    private int amount;
+    private float amount;
     private String icon;
     private String initials;
     private String group;
     private boolean active;
-    private boolean deleted;
 
     // region Construction
 
@@ -33,15 +32,14 @@ public class Project
 
     protected Project(Parcel in) {
         _id = in.readString();
-        _client = in.readString();
-        _organization = in.readString();
+//        _client = in.readString();
+//        _organization = in.readString();
         name = in.readString();
-        amount = in.readInt();
+        amount = in.readFloat();
         icon = in.readString();
         initials = in.readString();
         group = in.readString();
         active = in.readByte() != 0;
-        deleted = in.readByte() != 0;
     }
 
     // endregion
@@ -57,23 +55,23 @@ public class Project
         return this;
     }
 
-    public String get_organization() {
-        return _organization;
-    }
-
-    public Project set_organization(String _organization) {
-        this._organization = _organization;
-        return this;
-    }
-
-    public String get_client() {
-        return _client;
-    }
-
-    public Project set_client(String _client) {
-        this._client = _client;
-        return this;
-    }
+//    public String get_organization() {
+//        return _organization;
+//    }
+//
+//    public Project set_organization(String _organization) {
+//        this._organization = _organization;
+//        return this;
+//    }
+//
+//    public String get_client() {
+//        return _client;
+//    }
+//
+//    public Project set_client(String _client) {
+//        this._client = _client;
+//        return this;
+//    }
 
     public String getInitials() {
         return initials;
@@ -111,11 +109,11 @@ public class Project
         return this;
     }
 
-    public int getAmount() {
+    public float getAmount() {
         return amount;
     }
 
-    public Project setAmount(int amount) {
+    public Project setAmount(float amount) {
         this.amount = amount;
         return this;
     }
@@ -129,14 +127,14 @@ public class Project
         return this;
     }
 
-    public boolean getDeleted() {
-        return deleted;
-    }
-
-    public Project setDeleted(boolean deleted) {
-        this.deleted = deleted;
-        return this;
-    }
+//    public boolean getDeleted() {
+//        return deleted;
+//    }
+//
+//    public Project setDeleted(boolean deleted) {
+//        this.deleted = deleted;
+//        return this;
+//    }
 
     // endregion
 
@@ -150,15 +148,14 @@ public class Project
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(_id);
-        dest.writeString(_client);
-        dest.writeString(_organization);
+//        dest.writeString(_client);
+//        dest.writeString(_organization);
         dest.writeString(name);
-        dest.writeInt(amount);
+        dest.writeFloat(amount);
         dest.writeString(icon);
         dest.writeString(initials);
         dest.writeString(group);
         dest.writeByte((byte) (active ? 1 : 0));
-        dest.writeByte((byte) (deleted ? 1 : 0));
     }
 
     public static final Creator<Project> CREATOR = new Creator<Project>() {

@@ -10,6 +10,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.domain.Organization;
+import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.domain.User;
 
 /**
@@ -85,12 +86,51 @@ public class Storage
     }
 
     @Override
-    public void setOrganizations(List<Organization> organizations) {
+    public void setOrganizations(final List<Organization> organizations) {
+        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Organization.class).findAll().deleteAllFromRealm();
+                realm.copyToRealm(organizations);
+            }
+        });
+    }
+
+    @Override
+    public List<Project> getProjects() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(organizations);
-        realm.commitTransaction();
+        RealmResults<Project> projects = realm.where(Project.class).findAll();
         realm.close();
+        return projects;
+    }
+
+    @Override
+    public List<Project> getActiveProjects() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Project> projects = realm.where(Project.class).equalTo("active", true).findAll();
+        realm.close();
+        return projects;
+    }
+
+    @Override
+    public Project getProject(String id) {
+        Realm realm = Realm.getDefaultInstance();
+        Project project = realm.where(Project.class).equalTo("_id", id).findFirst();
+        realm.close();
+        return project;
+    }
+
+    @Override
+    public void setProjects(final List<Project> projects) {
+        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Project.class).findAll().deleteAllFromRealm();
+                realm.copyToRealm(projects);
+            }
+        });
     }
 
     // endregion

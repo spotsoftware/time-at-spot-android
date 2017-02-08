@@ -4,6 +4,7 @@ apply plugin: 'realm-android'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "it.spot.android.timespot"
         minSdkVersion 21
@@ -16,13 +17,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-    }
 
-    dataBinding {
-        enabled = true
+        dataBinding {
+            enabled = true
+        }
     }
-
-    useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 
 import java.util.List;
 
@@ -16,10 +17,12 @@ import io.realm.RealmResults;
 import it.spot.android.timespot.HomeActivity;
 import it.spot.android.timespot.R;
 import it.spot.android.timespot.api.OrganizationService;
+import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
 import it.spot.android.timespot.domain.Organization;
+import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,8 +68,30 @@ public class ChooseOrganizationActivity
 
     @Override
     public void onOrganizationClicked(Organization organization) {
-        Storage.init(this).setCurrentOrganizationId(organization.get_id());
-        HomeActivity.start(this);
+        String organizationId = organization.get_id();
+        Storage.init(this).setCurrentOrganizationId(organizationId);
+
+        TimeEndpoint.getInstance(this)
+                .create(ProjectService.class)
+                .get(organizationId)
+                .enqueue(new Callback<List<Project>>() {
+
+                    @Override
+                    public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
+                        if (response.isSuccessful()) {
+                            Storage.init(ChooseOrganizationActivity.this).setProjects(response.body());
+                            HomeActivity.start(ChooseOrganizationActivity.this);
+
+                        } else {
+                            // INF: Empty
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Project>> call, Throwable t) {
+                        Log.e("ChooseOrganizationActi", t.getMessage());
+                    }
+                });
     }
 
     // endregion

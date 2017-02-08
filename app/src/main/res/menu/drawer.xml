@@ -9,6 +9,12 @@
             android:title="@string/work_entries" />
 
         <item
+            android:id="@+id/projects"
+            android:checked="false"
+            android:icon="@drawable/ic_add"
+            android:title="@string/projects" />
+
+        <item
             android:id="@+id/projects_status"
             android:checked="false"
             android:icon="@drawable/ic_add"
