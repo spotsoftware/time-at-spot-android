@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.organization.ChooseOrganizationActivity;
+import it.spot.android.timespot.storage.Storage;
 
 public class SplashActivity
         extends AppCompatActivity
@@ -41,7 +44,12 @@ public class SplashActivity
     @Override
     public void run() {
         if (TimeAuthenticatorHelper.getAccount(this) != null) {
-            HomeActivity.start(this);
+            if (TextUtils.isEmpty(Storage.init(this).getCurrentOrganizationId())) {
+                ChooseOrganizationActivity.start(this);
+
+            } else {
+                HomeActivity.start(this);
+            }
 
         } else {
             // TODO - check login status
