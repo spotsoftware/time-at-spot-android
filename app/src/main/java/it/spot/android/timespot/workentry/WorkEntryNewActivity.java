@@ -186,7 +186,7 @@ public class WorkEntryNewActivity
 
         WorkEntryNewRequest request = new WorkEntryNewRequest()
                 .set_client("54e306309f11ec0b003510e6")
-                .set_performedBy(storage.getLoggedUser().get_id())
+                .set_performedBy(storage.getLoggedUserId())
                 .set_project("57a2f1a20e3c530f006f49a3")
                 .setDescription(mBinding.editDescription.getText().toString())
                 .setAmount(Float.valueOf(mBinding.editTime.getText().toString()))

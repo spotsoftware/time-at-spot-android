@@ -14,6 +14,8 @@ public interface IStorage {
 
     User getLoggedUser();
 
+    String getLoggedUserId();
+
     void setLoggedUser(User user);
 
     String getCurrentOrganizationId();

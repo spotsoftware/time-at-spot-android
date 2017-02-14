@@ -52,6 +52,15 @@ public class Storage
     }
 
     @Override
+    public String getLoggedUserId() {
+        Realm realm = Realm.getDefaultInstance();
+        Account account = TimeAuthenticatorHelper.getAccount(mContext);
+        String userId = realm.where(User.class).equalTo("_id", TimeAuthenticatorHelper.getUserId(mContext, account)).findFirst().get_id();
+        realm.close();
+        return userId;
+    }
+
+    @Override
     public void setLoggedUser(User user) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
