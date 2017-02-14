@@ -9,6 +9,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.domain.Client;
 import it.spot.android.timespot.domain.Organization;
 import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.domain.User;
@@ -128,6 +129,34 @@ public class Storage
             @Override
             public void execute(Realm realm) {
                 realm.where(Project.class).findAll().deleteAllFromRealm();
+                realm.copyToRealm(projects);
+            }
+        });
+    }
+
+    @Override
+    public List<Client> getClients() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Client> clients = realm.where(Client.class).findAll();
+        realm.close();
+        return clients;
+    }
+
+    @Override
+    public Client getClient(String id) {
+        Realm realm = Realm.getDefaultInstance();
+        Client client = realm.where(Client.class).equalTo("_id", id).findFirst();
+        realm.close();
+        return client;
+    }
+
+    @Override
+    public void setClients(final List<Client> projects) {
+        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Client.class).findAll().deleteAllFromRealm();
                 realm.copyToRealm(projects);
             }
         });

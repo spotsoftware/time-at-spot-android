@@ -16,11 +16,13 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.HomeActivity;
 import it.spot.android.timespot.R;
+import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.OrganizationService;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
+import it.spot.android.timespot.domain.Client;
 import it.spot.android.timespot.domain.Organization;
 import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.storage.Storage;
@@ -64,12 +66,9 @@ public class ChooseOrganizationActivity
 
     // endregion
 
-    // region ChooseOrganizationAdapter.Listener implementation
+    // region Private methods
 
-    @Override
-    public void onOrganizationClicked(Organization organization) {
-        String organizationId = organization.get_id();
-        Storage.init(this).setCurrentOrganizationId(organizationId);
+    private void syncProjects(String organizationId) {
 
         TimeEndpoint.getInstance(this)
                 .create(ProjectService.class)
@@ -92,6 +91,42 @@ public class ChooseOrganizationActivity
                         Log.e("ChooseOrganizationActi", t.getMessage());
                     }
                 });
+    }
+
+    private void syncClients(final String organizationId) {
+
+        TimeEndpoint.getInstance(this)
+                .create(ClientService.class)
+                .get(organizationId)
+                .enqueue(new Callback<List<Client>>() {
+
+                    @Override
+                    public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                        if (response.isSuccessful()) {
+                            Storage.init(ChooseOrganizationActivity.this).setClients(response.body());
+                            syncProjects(organizationId);
+
+                        } else {
+                            // INF: Empty
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Client>> call, Throwable t) {
+                        Log.e("ChooseOrganizationActi", t.getMessage());
+                    }
+                });
+    }
+
+    // endregion
+
+    // region ChooseOrganizationAdapter.Listener implementation
+
+    @Override
+    public void onOrganizationClicked(Organization organization) {
+        String organizationId = organization.get_id();
+        Storage.init(this).setCurrentOrganizationId(organizationId);
+        syncClients(organizationId);
     }
 
     // endregion
