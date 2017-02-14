@@ -25,7 +25,7 @@ public class SplashActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mHandler.postDelayed(this, 3000);
+        mHandler.postDelayed(this, 1000);
     }
 
     @Override
