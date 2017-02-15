@@ -82,6 +82,7 @@ public class ChooseOrganizationActivity
                         if (response.isSuccessful()) {
                             Storage.init(ChooseOrganizationActivity.this).setProjects(response.body());
                             HomeActivity.start(ChooseOrganizationActivity.this);
+                            finish();
 
                         } else {
                             // INF: Empty

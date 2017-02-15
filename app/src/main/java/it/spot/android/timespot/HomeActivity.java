@@ -96,7 +96,7 @@ public class HomeActivity
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-
+                        // INF: Empty
                     }
                 });
     }

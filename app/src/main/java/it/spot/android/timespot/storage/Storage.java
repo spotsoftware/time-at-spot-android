@@ -45,7 +45,12 @@ public class Storage
     @Override
     public void clear() {
         mPreferences.edit().clear().commit();
-        Realm.getDefaultInstance().deleteAll();
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.deleteAll();
+        realm.commitTransaction();
+        realm.close();
     }
 
     @Override
