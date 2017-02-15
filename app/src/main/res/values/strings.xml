@@ -8,6 +8,8 @@
     <string name="projects">Progetti</string>
     <string name="projects_status">Stato progetti</string>
 
+    <string name="choose_organization">Choose your organization</string>
+
     <string name="select_date">Seleziona una data</string>
     <string name="how_much_time">Quanto hai lavorato</string>
     <string name="what_project">Su quale progetto</string>

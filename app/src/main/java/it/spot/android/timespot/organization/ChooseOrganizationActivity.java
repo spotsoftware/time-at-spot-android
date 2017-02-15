@@ -52,6 +52,8 @@ public class ChooseOrganizationActivity
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_choose_organization);
 
+        getSupportActionBar().setTitle(R.string.choose_organization);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(false);
 

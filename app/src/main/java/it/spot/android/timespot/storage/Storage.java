@@ -43,6 +43,12 @@ public class Storage
     // region IStorage implementation
 
     @Override
+    public void clear() {
+        mPreferences.edit().clear().commit();
+        Realm.getDefaultInstance().deleteAll();
+    }
+
+    @Override
     public User getLoggedUser() {
         Realm realm = Realm.getDefaultInstance();
         Account account = TimeAuthenticatorHelper.getAccount(mContext);

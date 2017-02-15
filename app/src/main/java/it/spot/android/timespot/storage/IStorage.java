@@ -12,6 +12,8 @@ import it.spot.android.timespot.domain.User;
  */
 public interface IStorage {
 
+    void clear();
+
     User getLoggedUser();
 
     String getLoggedUserId();

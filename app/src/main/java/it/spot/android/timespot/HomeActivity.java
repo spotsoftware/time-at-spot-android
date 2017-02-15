@@ -18,6 +18,7 @@ import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.client.ClientsFragment;
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
 import it.spot.android.timespot.project.ProjectsFragment;
+import it.spot.android.timespot.storage.Storage;
 import it.spot.android.timespot.workentry.WorkEntriesFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,6 +87,7 @@ public class HomeActivity
                                 @Override
                                 public void run() {
                                     TimeAuthenticatorHelper.removeAccount(HomeActivity.this, TimeAuthenticatorHelper.getAccount(HomeActivity.this));
+                                    Storage.init(HomeActivity.this).clear();
                                     LoginActivity.start(HomeActivity.this);
                                 }
                             }).start();
