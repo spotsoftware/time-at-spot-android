@@ -1,4 +1,4 @@
-package it.spot.android.timespot.customer;
+package it.spot.android.timespot.client;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +52,9 @@ public class ClientsFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-        Realm.getDefaultInstance().where(Client.class).equalTo("active", true).findAllAsync().addChangeListener(this);
+        Realm.getDefaultInstance().where(Client.class)
+                .equalTo("active", true)
+                .findAllSortedAsync("name").addChangeListener(this);
 
         return mBinding.getRoot();
     }
@@ -71,10 +73,7 @@ public class ClientsFragment
                     @Override
                     public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(getActivity(), "success " + response.body().size(), Toast.LENGTH_LONG).show();
-                            Log.e("CLIENTS", "success " + response.body().size());
-                            mAdapter.setClients(response.body());
-                            mBinding.swipeRefresh.setRefreshing(false);
+                            Storage.init(getActivity()).setClients(response.body());
 
                         } else {
                             Log.e("CLIENTS", "error");
@@ -115,6 +114,8 @@ public class ClientsFragment
     public void onChange(RealmResults<Client> element) {
         if (element != null && element.size() > 0) {
             mAdapter.setClients(element);
+            mBinding.swipeRefresh.setRefreshing(false);
+            Toast.makeText(getActivity(), "adding elements " + element.size(), Toast.LENGTH_SHORT).show();
 
         } else {
             queryClients();

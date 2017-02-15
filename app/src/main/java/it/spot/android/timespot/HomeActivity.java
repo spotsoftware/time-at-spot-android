@@ -15,7 +15,7 @@ import android.view.View;
 import it.spot.android.timespot.api.AuthService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
-import it.spot.android.timespot.customer.ClientsFragment;
+import it.spot.android.timespot.client.ClientsFragment;
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
 import it.spot.android.timespot.project.ProjectsFragment;
 import it.spot.android.timespot.workentry.WorkEntriesFragment;

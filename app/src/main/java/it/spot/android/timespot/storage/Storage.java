@@ -160,13 +160,13 @@ public class Storage
     }
 
     @Override
-    public void setClients(final List<Client> projects) {
+    public void setClients(final List<Client> clients) {
         Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
 
             @Override
             public void execute(Realm realm) {
                 realm.where(Client.class).findAll().deleteAllFromRealm();
-                realm.copyToRealm(projects);
+                realm.copyToRealm(clients);
             }
         });
     }

@@ -1,19 +1,21 @@
-package it.spot.android.timespot.customer;
+package it.spot.android.timespot.client;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import it.spot.android.timespot.R;
 import it.spot.android.timespot.databinding.ListItemClientBinding;
-import it.spot.android.timespot.databinding.ListItemProjectBinding;
 import it.spot.android.timespot.domain.Client;
-import it.spot.android.timespot.domain.Project;
 
 /**
  * @author a.rinaldi
@@ -55,6 +57,24 @@ public class ClientsAdapter
     public void onBindViewHolder(ClientsAdapter.ViewHolder holder, int position) {
         Client client = mClients.get(position);
         holder.mBinding.name.setText(client.getName());
+
+        Picasso
+                .with(holder.itemView.getContext())
+                .cancelRequest(holder.mBinding.icon);
+
+        if (!TextUtils.isEmpty(client.getIcon())) {
+            Picasso
+                    .with(holder.itemView.getContext())
+                    .load(client.getIcon())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.mBinding.icon);
+
+        } else {
+            holder.mBinding.icon.setImageResource(R.drawable.ic_unknown);
+        }
+
+        holder.mBinding.executePendingBindings();
     }
 
     @Override
