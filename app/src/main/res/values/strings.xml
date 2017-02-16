@@ -8,6 +8,7 @@
     <string name="projects">Progetti</string>
     <string name="projects_status">Stato progetti</string>
 
+    <string name="add_organization">Add organization</string>
     <string name="choose_organization">Choose your organization</string>
 
     <string name="select_date">Seleziona una data</string>
