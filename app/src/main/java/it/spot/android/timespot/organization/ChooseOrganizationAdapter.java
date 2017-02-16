@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.spot.android.timespot.databinding.ListItemOrganizationBinding;
-import it.spot.android.timespot.domain.Organization;
+import it.spot.android.timespot.api.domain.Organization;
 
 /**
  * @author a.rinaldi

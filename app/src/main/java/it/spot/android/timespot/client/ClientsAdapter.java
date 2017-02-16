@@ -15,7 +15,7 @@ import java.util.List;
 
 import it.spot.android.timespot.R;
 import it.spot.android.timespot.databinding.ListItemClientBinding;
-import it.spot.android.timespot.domain.Client;
+import it.spot.android.timespot.api.domain.Client;
 
 /**
  * @author a.rinaldi

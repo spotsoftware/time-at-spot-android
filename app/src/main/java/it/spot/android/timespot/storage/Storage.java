@@ -9,10 +9,10 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
-import it.spot.android.timespot.domain.Client;
-import it.spot.android.timespot.domain.Organization;
-import it.spot.android.timespot.domain.Project;
-import it.spot.android.timespot.domain.User;
+import it.spot.android.timespot.api.domain.Client;
+import it.spot.android.timespot.api.domain.Organization;
+import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.api.domain.User;
 
 /**
  * @author a.rinaldi

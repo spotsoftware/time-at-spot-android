@@ -15,7 +15,7 @@ import java.util.List;
 
 import it.spot.android.timespot.R;
 import it.spot.android.timespot.databinding.ListItemProjectBinding;
-import it.spot.android.timespot.domain.Project;
+import it.spot.android.timespot.api.domain.Project;
 
 /**
  * @author a.rinaldi

@@ -2,7 +2,7 @@ package it.spot.android.timespot.api;
 
 import java.util.List;
 
-import it.spot.android.timespot.domain.Organization;
+import it.spot.android.timespot.api.domain.Organization;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

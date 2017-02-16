@@ -2,7 +2,7 @@ package it.spot.android.timespot.api.response;
 
 import java.util.List;
 
-import it.spot.android.timespot.domain.WorkEntry;
+import it.spot.android.timespot.api.domain.WorkEntry;
 
 /**
  * @author a.rinaldi

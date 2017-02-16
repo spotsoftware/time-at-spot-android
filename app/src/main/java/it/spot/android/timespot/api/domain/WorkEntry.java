@@ -1,4 +1,4 @@
-package it.spot.android.timespot.domain;
+package it.spot.android.timespot.api.domain;
 
 import android.os.Parcel;
 import android.os.Parcelable;

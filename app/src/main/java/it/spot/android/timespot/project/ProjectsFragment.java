@@ -20,7 +20,7 @@ import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.core.HttpCallback;
 import it.spot.android.timespot.databinding.FragmentProjectsBinding;
-import it.spot.android.timespot.domain.Project;
+import it.spot.android.timespot.api.domain.Project;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
