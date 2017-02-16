@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 
@@ -21,6 +20,7 @@ import it.spot.android.timespot.api.OrganizationService;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
 import it.spot.android.timespot.domain.Client;
 import it.spot.android.timespot.domain.Organization;
@@ -34,7 +34,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class ChooseOrganizationActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements ChooseOrganizationAdapter.Listener, RealmChangeListener<RealmResults<Organization>> {
 
     public static void start(Activity activity) {
@@ -64,6 +64,11 @@ public class ChooseOrganizationActivity
         mBinding.list.setAdapter(mAdapter);
 
         Realm.getDefaultInstance().where(Organization.class).findAllAsync().addChangeListener(this);
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Select organization page";
     }
 
     // endregion

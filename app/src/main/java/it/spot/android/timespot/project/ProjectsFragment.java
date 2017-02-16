@@ -2,7 +2,6 @@ package it.spot.android.timespot.project;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -18,6 +17,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.databinding.FragmentProjectsBinding;
 import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.storage.Storage;
@@ -30,7 +30,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class ProjectsFragment
-        extends Fragment
+        extends BaseFragment
         implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Project>> {
 
     private ProjectsAdapter mAdapter;
@@ -59,9 +59,8 @@ public class ProjectsFragment
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(getActivity(), "ciao", Toast.LENGTH_SHORT).show();
+    protected String getDescription() {
+        return "Projects list page";
     }
 
     // endregion

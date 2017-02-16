@@ -2,7 +2,6 @@ package it.spot.android.timespot.client;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -18,6 +17,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.databinding.FragmentClientsBinding;
 import it.spot.android.timespot.domain.Client;
 import it.spot.android.timespot.storage.Storage;
@@ -29,7 +29,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class ClientsFragment
-        extends Fragment
+        extends BaseFragment
         implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Client>> {
 
     private ClientsAdapter mAdapter;
@@ -57,6 +57,11 @@ public class ClientsFragment
                 .findAllSortedAsync("name").addChangeListener(this);
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Clients list page";
     }
 
     // endregion
