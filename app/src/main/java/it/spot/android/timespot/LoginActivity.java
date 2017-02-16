@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -14,12 +15,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import it.spot.android.timespot.api.AuthService;
@@ -40,10 +41,11 @@ import retrofit2.Response;
  */
 public class LoginActivity
         extends BaseActivity
-        implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final int REQUEST_CODE_SIGN_IN = 0;
-    private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final int REQUEST_CODE_SIGN_IN_AGAIN = 1;
+    private static final int PERMISSION_REQUEST_CODE = 2;
 
     public static void start(Activity activity) {
         Intent intent = new Intent(activity, LoginActivity.class);
@@ -67,8 +69,9 @@ public class LoginActivity
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, options)
+                .addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(this)
                 .build();
 
         mBinding.googleLoginButton.setOnClickListener(this);
@@ -78,10 +81,23 @@ public class LoginActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == REQUEST_CODE_SIGN_IN) {
+        if (requestCode == REQUEST_CODE_SIGN_IN_AGAIN) {
+            if (resultCode != Activity.RESULT_OK) {
+                mSignInClicked = false;
+            }
+
+            mIntentInProgress = false;
+
+            if (!mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.reconnect();
+            }
+
+        } else if (requestCode == REQUEST_CODE_SIGN_IN) {
+
             final GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+
+                mSignInClicked = false;
                 Snackbar.make(mBinding.getRoot(), "Welcome " + result.getSignInAccount().getIdToken(), Snackbar.LENGTH_LONG).show();
 
                 TimeEndpoint.getInstance(getApplicationContext())
@@ -138,9 +154,38 @@ public class LoginActivity
 
     // region GoogleApiClient.OnConnectionFailedListener implementation
 
+    private boolean mIntentInProgress;
+    private boolean mSignInClicked;
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // INF: Empty
+    }
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_LONG).show();
+        if (!mIntentInProgress) {
+            if (mSignInClicked && connectionResult.hasResolution()) {
+                // The user has already clicked 'sign-in' so we attempt to resolve all
+                // errors until the user is signed in, or they cancel.
+                try {
+                    connectionResult.startResolutionForResult(this, REQUEST_CODE_SIGN_IN_AGAIN);
+                    mIntentInProgress = true;
+
+                } catch (IntentSender.SendIntentException e) {
+                    // The intent was canceled before it was sent.  Return to the default
+                    // state and attempt to connect to get an updated ConnectionResult.
+                    mIntentInProgress = false;
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
     }
 
     // endregion
@@ -164,8 +209,14 @@ public class LoginActivity
     // region Private methods
 
     private void attemptLogin() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int status = api.isGooglePlayServicesAvailable(this);
+        if (status == ConnectionResult.SUCCESS) {
+            if (!mGoogleApiClient.isConnecting()) {
+                mSignInClicked = true;
+                mGoogleApiClient.connect();
+            }
+        }
     }
 
     // endregion
