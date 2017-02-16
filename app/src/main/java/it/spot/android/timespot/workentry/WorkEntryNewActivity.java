@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -28,6 +27,7 @@ import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntryNewRequest;
 import it.spot.android.timespot.api.response.WorkEntryNewResponse;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityWorkEntryNewBinding;
 import it.spot.android.timespot.storage.IStorage;
 import it.spot.android.timespot.storage.Storage;
@@ -42,7 +42,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntryNewActivity
-        extends AppCompatActivity {
+        extends BaseActivity {
 
     private ActivityWorkEntryNewBinding mBinding;
 
@@ -102,6 +102,11 @@ public class WorkEntryNewActivity
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Create work entry page";
     }
 
     // endregion

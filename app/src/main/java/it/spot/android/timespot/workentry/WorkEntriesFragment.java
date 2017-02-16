@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -21,6 +20,7 @@ import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntriesRequest;
 import it.spot.android.timespot.api.response.WorkEntriesResponse;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.databinding.FragmentWorkEntriesBinding;
 import it.spot.android.timespot.storage.Storage;
 import it.spot.android.timespot.support.Utils;
@@ -32,7 +32,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntriesFragment
-        extends Fragment
+        extends BaseFragment
         implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private WorkEntriesAdapter mAdapter;
@@ -58,6 +58,11 @@ public class WorkEntriesFragment
         queryWorkEntries();
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Work entries list page";
     }
 
     // endregion

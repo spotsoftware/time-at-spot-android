@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +26,7 @@ import it.spot.android.timespot.api.AuthService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.request.AuthRequest;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityLoginBinding;
 import it.spot.android.timespot.domain.User;
 import it.spot.android.timespot.organization.ChooseOrganizationActivity;
@@ -39,7 +39,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class LoginActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final int REQUEST_CODE_SIGN_IN = 0;
@@ -127,6 +127,11 @@ public class LoginActivity
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Login page";
     }
 
     // endregion

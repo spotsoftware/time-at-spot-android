@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -16,6 +15,7 @@ import it.spot.android.timespot.api.AuthService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.client.ClientsFragment;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
 import it.spot.android.timespot.project.ProjectsFragment;
 import it.spot.android.timespot.storage.Storage;
@@ -28,7 +28,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class HomeActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static void start(Activity activity) {
@@ -67,6 +67,11 @@ public class HomeActivity
         onNavigationItemSelected(mBinding.navigation.getMenu().getItem(0));
 
         drawerToggle.syncState();
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Home page";
     }
 
     // endregion
