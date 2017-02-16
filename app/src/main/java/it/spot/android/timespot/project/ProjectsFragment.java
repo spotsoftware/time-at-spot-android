@@ -18,10 +18,10 @@ import io.realm.RealmResults;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.core.BaseFragment;
+import it.spot.android.timespot.core.HttpCallback;
 import it.spot.android.timespot.databinding.FragmentProjectsBinding;
 import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.storage.Storage;
-import it.spot.android.timespot.support.CancelableCallback;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,7 +67,7 @@ public class ProjectsFragment
 
     // region Private methods
 
-    private CancelableCallback mProjectsCallback = new CancelableCallback(new Callback<List<Project>>() {
+    private HttpCallback<List<Project>> mProjectsCallback = new HttpCallback<>(new Callback<List<Project>>() {
 
         @Override
         public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
