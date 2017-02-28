@@ -25,11 +25,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import it.spot.android.timespot.api.AuthService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.domain.User;
 import it.spot.android.timespot.api.request.AuthRequest;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityLoginBinding;
-import it.spot.android.timespot.api.domain.User;
+import it.spot.android.timespot.notifications.DailyWorkEntryNotificationScheduler;
 import it.spot.android.timespot.organization.ChooseOrganizationActivity;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
@@ -112,6 +113,7 @@ public class LoginActivity
                                     if (account != null) {
                                         TimeAuthenticatorHelper.updateToken(getApplicationContext(), account, response.headers().get("Set-Cookie"));
                                         Storage.init(LoginActivity.this).setLoggedUser(response.body());
+                                        DailyWorkEntryNotificationScheduler.newInstance().schedule(getApplicationContext());
                                         ChooseOrganizationActivity.start(LoginActivity.this);
                                         finish();
 

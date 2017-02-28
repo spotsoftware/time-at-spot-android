@@ -44,6 +44,8 @@ import retrofit2.Response;
 public class WorkEntryNewActivity
         extends BaseActivity {
 
+    public static final int NEW_WORK_ENTRY_REQUEST_CODE = 123;
+
     private ActivityWorkEntryNewBinding mBinding;
 
     // region Activity life cycle

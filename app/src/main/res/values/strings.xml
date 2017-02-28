@@ -16,6 +16,9 @@
     <string name="what_project">Su quale progetto</string>
     <string name="what_did_you_do">Qualche dettaglio su cosa hai fatto</string>
 
+    <!-- Notifications -->
+    <string name="daily_work_entry_reminder">Ti sei ricordato di versare le ore oggi?</string>
+
     <!-- Useless but needed -->
     <string name="drawer_open">Apri</string>
     <string name="drawer_close">Chiudi</string>

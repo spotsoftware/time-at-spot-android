@@ -18,6 +18,7 @@ import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.client.ClientsFragment;
 import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityHomeBinding;
+import it.spot.android.timespot.notifications.DailyWorkEntryNotificationScheduler;
 import it.spot.android.timespot.project.ProjectsFragment;
 import it.spot.android.timespot.storage.Storage;
 import it.spot.android.timespot.workentry.WorkEntriesFragment;
@@ -120,6 +121,7 @@ public class HomeActivity
                                 @Override
                                 public void run() {
                                     TimeAuthenticatorHelper.removeAccount(HomeActivity.this, TimeAuthenticatorHelper.getAccount(HomeActivity.this));
+                                    DailyWorkEntryNotificationScheduler.newInstance().cancel(getApplicationContext());
                                     Storage.init(HomeActivity.this).clear();
                                     LoginActivity.start(HomeActivity.this);
                                 }
