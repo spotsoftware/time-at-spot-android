@@ -19,12 +19,12 @@ import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.OrganizationService;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
-import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
-import it.spot.android.timespot.core.BaseActivity;
-import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
 import it.spot.android.timespot.api.domain.Client;
 import it.spot.android.timespot.api.domain.Organization;
 import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.core.BaseActivity;
+import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -129,6 +129,11 @@ public class ChooseOrganizationActivity
     // endregion
 
     // region ChooseOrganizationAdapter.Listener implementation
+
+    @Override
+    public void onAddOrganizationClicked() {
+
+    }
 
     @Override
     public void onOrganizationClicked(Organization organization) {
