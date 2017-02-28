@@ -17,10 +17,11 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.domain.Project;
 import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.core.HttpCallback;
 import it.spot.android.timespot.databinding.FragmentProjectsBinding;
-import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.storage.IStorage;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +32,7 @@ import retrofit2.Response;
  */
 public class ProjectsFragment
         extends BaseFragment
-        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Project>> {
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<Realm> {
 
     private ProjectsAdapter mAdapter;
     private FragmentProjectsBinding mBinding;
@@ -53,7 +54,8 @@ public class ProjectsFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-        Realm.getDefaultInstance().where(Project.class).equalTo("active", true).findAllSortedAsync("name").addChangeListener(this);
+        Realm.getDefaultInstance().addChangeListener(this);
+        queryProjectsLocally();
 
         return mBinding.getRoot();
     }
@@ -67,30 +69,45 @@ public class ProjectsFragment
 
     // region Private methods
 
-    private HttpCallback<List<Project>> mProjectsCallback = new HttpCallback<>(new Callback<List<Project>>() {
-
-        @Override
-        public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
-
-            if (response.isSuccessful()) {
-                Storage.init(getActivity()).setProjects(response.body());
-
-            } else {
-                Log.e("PROJECTS", "error");
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<Project>> call, Throwable t) {
-            Log.e("PROJECTS", "errorrrrr");
-        }
-    });
-
     private void queryProjects() {
         TimeEndpoint.getInstance(getActivity())
                 .create(ProjectService.class)
                 .get(Storage.init(getActivity()).getCurrentOrganizationId())
-                .enqueue(mProjectsCallback);
+                .enqueue(new HttpCallback<>(new Callback<List<Project>>() {
+
+                    @Override
+                    public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
+
+                        if (response.isSuccessful()) {
+                            Storage.init(getActivity()).setProjects(response.body());
+
+                        } else {
+                            Log.e("PROJECTS", "error");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Project>> call, Throwable t) {
+                        Log.e("PROJECTS", "errorrrrr");
+                    }
+                }));
+    }
+
+    private void queryProjectsLocally() {
+        Realm.getDefaultInstance().where(Project.class).equalTo("active", true).findAllSortedAsync("name").addChangeListener(new RealmChangeListener<RealmResults<Project>>() {
+
+            @Override
+            public void onChange(RealmResults<Project> element) {
+                if (element != null && element.size() > 0) {
+                    Toast.makeText(getActivity(), "success " + element.size(), Toast.LENGTH_LONG).show();
+                    mAdapter.setProjects(element);
+                    mBinding.swipeRefresh.setRefreshing(false);
+
+                } else {
+                    queryProjects();
+                }
+            }
+        });
     }
 
     // endregion
@@ -117,15 +134,9 @@ public class ProjectsFragment
     // region RealmChangeListener<RealmResults<Project>> implementation
 
     @Override
-    public void onChange(RealmResults<Project> element) {
-        if (element != null && element.size() > 0) {
-            Toast.makeText(getActivity(), "success " + element.size(), Toast.LENGTH_LONG).show();
-            mAdapter.setProjects(element);
-            mBinding.swipeRefresh.setRefreshing(false);
-
-        } else {
-            queryProjects();
-        }
+    public void onChange(Realm realm) {
+        Log.e("Projects", "Realm.onChange triggered");
+        queryProjectsLocally();
     }
 
     // endregion

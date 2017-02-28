@@ -3,10 +3,12 @@ package it.spot.android.timespot.storage;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.api.domain.Client;
@@ -144,10 +146,12 @@ public class Storage
 
     @Override
     public void setProjects(final List<Project> projects) {
+        Log.e("Projects", "setProjects1");
         Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
 
             @Override
             public void execute(Realm realm) {
+                Log.e("Projects", "setProjects2");
                 realm.where(Project.class).findAll().deleteAllFromRealm();
                 realm.copyToRealm(projects);
             }
