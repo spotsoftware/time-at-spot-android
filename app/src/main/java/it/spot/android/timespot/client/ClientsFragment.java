@@ -17,9 +17,9 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.domain.Client;
 import it.spot.android.timespot.core.BaseFragment;
 import it.spot.android.timespot.databinding.FragmentClientsBinding;
-import it.spot.android.timespot.api.domain.Client;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +33,7 @@ public class ClientsFragment
         implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Client>> {
 
     private ClientsAdapter mAdapter;
+    private RealmResults<Client> mClients;
     private FragmentClientsBinding mBinding;
 
     // region Fragment life cycle
@@ -52,9 +53,10 @@ public class ClientsFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-        Realm.getDefaultInstance().where(Client.class)
+        mClients = Realm.getDefaultInstance().where(Client.class)
                 .equalTo("active", true)
-                .findAllSortedAsync("name").addChangeListener(this);
+                .findAllSortedAsync("name");
+        mClients.addChangeListener(this);
 
         return mBinding.getRoot();
     }
@@ -117,10 +119,10 @@ public class ClientsFragment
 
     @Override
     public void onChange(RealmResults<Client> element) {
-        if (element != null && element.size() > 0) {
-            mAdapter.setClients(element);
+        if (mClients != null && mClients.size() > 0) {
+            mAdapter.setClients(mClients);
             mBinding.swipeRefresh.setRefreshing(false);
-            Toast.makeText(getActivity(), "adding elements " + element.size(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "adding elements " + mClients.size(), Toast.LENGTH_SHORT).show();
 
         } else {
             queryClients();
