@@ -4,13 +4,20 @@
     <string name="save">Save</string>
 
     <string name="work_entries">Versamenti</string>
+    <string name="clients">Clienti</string>
     <string name="projects">Progetti</string>
     <string name="projects_status">Stato progetti</string>
+
+    <string name="add_organization">Add organization</string>
+    <string name="choose_organization">Choose your organization</string>
 
     <string name="select_date">Seleziona una data</string>
     <string name="how_much_time">Quanto hai lavorato</string>
     <string name="what_project">Su quale progetto</string>
     <string name="what_did_you_do">Qualche dettaglio su cosa hai fatto</string>
+
+    <!-- Notifications -->
+    <string name="daily_work_entry_reminder">Ti sei ricordato di versare le ore oggi?</string>
 
     <!-- Useless but needed -->
     <string name="drawer_open">Apri</string>

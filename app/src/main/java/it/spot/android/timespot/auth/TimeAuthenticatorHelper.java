@@ -15,7 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import java.io.IOException;
 
 import it.spot.android.timespot.R;
-import it.spot.android.timespot.domain.User;
+import it.spot.android.timespot.api.domain.User;
 
 /**
  * TODO - review persisted name and id... maybe it would be better to store as user data the entire model?

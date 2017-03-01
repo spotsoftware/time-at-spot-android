@@ -1,4 +1,4 @@
-package it.spot.android.timespot.domain;
+package it.spot.android.timespot.api.domain;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,7 +15,6 @@ public class Client
 
     @PrimaryKey
     private String _id;
-    private String _organization;
     private String initials;
     private String icon;
     private String name;
@@ -30,7 +29,6 @@ public class Client
 
     protected Client(Parcel in) {
         _id = in.readString();
-        _organization = in.readString();
         initials = in.readString();
         icon = in.readString();
         name = in.readString();
@@ -48,15 +46,6 @@ public class Client
 
     public Client set_id(String _id) {
         this._id = _id;
-        return this;
-    }
-
-    public String get_organization() {
-        return _organization;
-    }
-
-    public Client set_organization(String _organization) {
-        this._organization = _organization;
         return this;
     }
 
@@ -117,7 +106,6 @@ public class Client
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(_id);
-        dest.writeString(_organization);
         dest.writeString(initials);
         dest.writeString(icon);
         dest.writeString(name);

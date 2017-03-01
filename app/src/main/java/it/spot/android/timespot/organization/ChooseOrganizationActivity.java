@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 
@@ -16,13 +15,16 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.HomeActivity;
 import it.spot.android.timespot.R;
+import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.OrganizationService;
 import it.spot.android.timespot.api.ProjectService;
 import it.spot.android.timespot.api.TimeEndpoint;
+import it.spot.android.timespot.api.domain.Client;
+import it.spot.android.timespot.api.domain.Organization;
+import it.spot.android.timespot.api.domain.Project;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityChooseOrganizationBinding;
-import it.spot.android.timespot.domain.Organization;
-import it.spot.android.timespot.domain.Project;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +34,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class ChooseOrganizationActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements ChooseOrganizationAdapter.Listener, RealmChangeListener<RealmResults<Organization>> {
 
     public static void start(Activity activity) {
@@ -50,6 +52,8 @@ public class ChooseOrganizationActivity
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_choose_organization);
 
+        getSupportActionBar().setTitle(R.string.choose_organization);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(false);
 
@@ -62,14 +66,16 @@ public class ChooseOrganizationActivity
         Realm.getDefaultInstance().where(Organization.class).findAllAsync().addChangeListener(this);
     }
 
+    @Override
+    protected String getDescription() {
+        return "Select organization page";
+    }
+
     // endregion
 
-    // region ChooseOrganizationAdapter.Listener implementation
+    // region Private methods
 
-    @Override
-    public void onOrganizationClicked(Organization organization) {
-        String organizationId = organization.get_id();
-        Storage.init(this).setCurrentOrganizationId(organizationId);
+    private void syncProjects(String organizationId) {
 
         TimeEndpoint.getInstance(this)
                 .create(ProjectService.class)
@@ -81,6 +87,7 @@ public class ChooseOrganizationActivity
                         if (response.isSuccessful()) {
                             Storage.init(ChooseOrganizationActivity.this).setProjects(response.body());
                             HomeActivity.start(ChooseOrganizationActivity.this);
+                            finish();
 
                         } else {
                             // INF: Empty
@@ -92,6 +99,47 @@ public class ChooseOrganizationActivity
                         Log.e("ChooseOrganizationActi", t.getMessage());
                     }
                 });
+    }
+
+    private void syncClients(final String organizationId) {
+
+        TimeEndpoint.getInstance(this)
+                .create(ClientService.class)
+                .get(organizationId)
+                .enqueue(new Callback<List<Client>>() {
+
+                    @Override
+                    public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                        if (response.isSuccessful()) {
+                            Storage.init(ChooseOrganizationActivity.this).setClients(response.body());
+                            syncProjects(organizationId);
+
+                        } else {
+                            // INF: Empty
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Client>> call, Throwable t) {
+                        Log.e("ChooseOrganizationActi", t.getMessage());
+                    }
+                });
+    }
+
+    // endregion
+
+    // region ChooseOrganizationAdapter.Listener implementation
+
+    @Override
+    public void onAddOrganizationClicked() {
+
+    }
+
+    @Override
+    public void onOrganizationClicked(Organization organization) {
+        String organizationId = organization.get_id();
+        Storage.init(this).setCurrentOrganizationId(organizationId);
+        syncClients(organizationId);
     }
 
     // endregion

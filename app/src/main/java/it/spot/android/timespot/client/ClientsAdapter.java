@@ -1,4 +1,4 @@
-package it.spot.android.timespot.project;
+package it.spot.android.timespot.client;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -14,23 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.spot.android.timespot.R;
-import it.spot.android.timespot.databinding.ListItemProjectBinding;
-import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.databinding.ListItemClientBinding;
+import it.spot.android.timespot.api.domain.Client;
 
 /**
  * @author a.rinaldi
  */
-public class ProjectsAdapter
-        extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
+public class ClientsAdapter
+        extends RecyclerView.Adapter<ClientsAdapter.ViewHolder> {
 
     private LayoutInflater mInflater;
-    private List<Project> mProjects;
+    private List<Client> mClients;
 
     // region Construction
 
-    public ProjectsAdapter(Context context) {
+    public ClientsAdapter(Context context) {
         super();
-        mProjects = new ArrayList<>();
+        mClients = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
     }
 
@@ -38,9 +38,9 @@ public class ProjectsAdapter
 
     // region Public methods
 
-    public void setProjects(List<Project> entries) {
-        mProjects.clear();
-        mProjects.addAll(entries);
+    public void setClients(List<Client> clients) {
+        mClients.clear();
+        mClients.addAll(clients);
         notifyDataSetChanged();
     }
 
@@ -49,23 +49,23 @@ public class ProjectsAdapter
     // region RecyclerView.Adapter implementation
 
     @Override
-    public ProjectsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(ListItemProjectBinding.inflate(mInflater, parent, false).getRoot());
+    public ClientsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(ListItemClientBinding.inflate(mInflater, parent, false).getRoot());
     }
 
     @Override
-    public void onBindViewHolder(ProjectsAdapter.ViewHolder holder, int position) {
-        Project project = mProjects.get(position);
-        holder.mBinding.name.setText(project.getName());
+    public void onBindViewHolder(ClientsAdapter.ViewHolder holder, int position) {
+        Client client = mClients.get(position);
+        holder.mBinding.name.setText(client.getName());
 
         Picasso
                 .with(holder.itemView.getContext())
                 .cancelRequest(holder.mBinding.icon);
 
-        if (!TextUtils.isEmpty(project.getIcon())) {
+        if (!TextUtils.isEmpty(client.getIcon())) {
             Picasso
                     .with(holder.itemView.getContext())
-                    .load(project.getIcon())
+                    .load(client.getIcon())
                     .fit()
                     .centerCrop()
                     .into(holder.mBinding.icon);
@@ -79,7 +79,7 @@ public class ProjectsAdapter
 
     @Override
     public int getItemCount() {
-        return mProjects.size();
+        return mClients.size();
     }
 
     // endregion
@@ -87,7 +87,7 @@ public class ProjectsAdapter
     protected static class ViewHolder
             extends RecyclerView.ViewHolder {
 
-        ListItemProjectBinding mBinding;
+        ListItemClientBinding mBinding;
 
         public ViewHolder(View itemView) {
             super(itemView);

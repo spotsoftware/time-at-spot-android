@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -30,6 +29,7 @@ import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
 import it.spot.android.timespot.api.request.WorkEntryNewRequest;
 import it.spot.android.timespot.api.response.WorkEntryNewResponse;
+import it.spot.android.timespot.core.BaseActivity;
 import it.spot.android.timespot.databinding.ActivityWorkEntryNewBinding;
 import it.spot.android.timespot.storage.IStorage;
 import it.spot.android.timespot.storage.Storage;
@@ -44,7 +44,9 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntryNewActivity
-        extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+        extends BaseActivity {
+
+    public static final int NEW_WORK_ENTRY_REQUEST_CODE = 123;
 
     private ActivityWorkEntryNewBinding mBinding;
     private Calendar mDate = Calendar.getInstance();
@@ -105,6 +107,11 @@ public class WorkEntryNewActivity
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected String getDescription() {
+        return "Create work entry page";
     }
 
     // endregion
@@ -204,7 +211,7 @@ public class WorkEntryNewActivity
 
         WorkEntryNewRequest request = new WorkEntryNewRequest()
                 .set_client("54e306309f11ec0b003510e6")
-                .set_performedBy(storage.getLoggedUser().get_id())
+                .set_performedBy(storage.getLoggedUserId())
                 .set_project("57a2f1a20e3c530f006f49a3")
                 .setDescription(mBinding.editDescription.getText().toString())
                 .setAmount(Float.valueOf(mBinding.editTime.getText().toString()))

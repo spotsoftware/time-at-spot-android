@@ -1,4 +1,4 @@
-package it.spot.android.timespot.project;
+package it.spot.android.timespot.client;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,13 +15,11 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import it.spot.android.timespot.api.ProjectService;
+import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.TimeEndpoint;
-import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.api.domain.Client;
 import it.spot.android.timespot.core.BaseFragment;
-import it.spot.android.timespot.core.HttpCallback;
-import it.spot.android.timespot.databinding.FragmentProjectsBinding;
-import it.spot.android.timespot.storage.IStorage;
+import it.spot.android.timespot.databinding.FragmentClientsBinding;
 import it.spot.android.timespot.storage.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,21 +28,22 @@ import retrofit2.Response;
 /**
  * @author a.rinaldi
  */
-public class ProjectsFragment
+public class ClientsFragment
         extends BaseFragment
-        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<Realm> {
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Client>> {
 
-    private ProjectsAdapter mAdapter;
-    private FragmentProjectsBinding mBinding;
+    private ClientsAdapter mAdapter;
+    private RealmResults<Client> mClients;
+    private FragmentClientsBinding mBinding;
 
     // region Fragment life cycle
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mBinding = FragmentProjectsBinding.inflate(inflater, container, false);
+        mBinding = FragmentClientsBinding.inflate(inflater, container, false);
 
-        mAdapter = new ProjectsAdapter(getActivity());
+        mAdapter = new ClientsAdapter(getActivity());
         mBinding.list.setLayoutManager(new LinearLayoutManager(getActivity()));
         mBinding.list.setHasFixedSize(true);
         mBinding.list.setAdapter(mAdapter);
@@ -54,60 +53,45 @@ public class ProjectsFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-        Realm.getDefaultInstance().addChangeListener(this);
-        queryProjectsLocally();
+        mClients = Realm.getDefaultInstance().where(Client.class)
+                .equalTo("active", true)
+                .findAllSortedAsync("name");
+        mClients.addChangeListener(this);
 
         return mBinding.getRoot();
     }
 
     @Override
     protected String getDescription() {
-        return "Projects list page";
+        return "Clients list page";
     }
 
     // endregion
 
     // region Private methods
 
-    private void queryProjects() {
+    private void queryClients() {
+
         TimeEndpoint.getInstance(getActivity())
-                .create(ProjectService.class)
+                .create(ClientService.class)
                 .get(Storage.init(getActivity()).getCurrentOrganizationId())
-                .enqueue(new HttpCallback<>(new Callback<List<Project>>() {
+                .enqueue(new Callback<List<Client>>() {
 
                     @Override
-                    public void onResponse(Call<List<Project>> call, Response<List<Project>> response) {
-
+                    public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
                         if (response.isSuccessful()) {
-                            Storage.init(getActivity()).setProjects(response.body());
+                            Storage.init(getActivity()).setClients(response.body());
 
                         } else {
-                            Log.e("PROJECTS", "error");
+                            Log.e("CLIENTS", "error");
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<List<Project>> call, Throwable t) {
-                        Log.e("PROJECTS", "errorrrrr");
+                    public void onFailure(Call<List<Client>> call, Throwable t) {
+                        Log.e("CLIENTS", "errorrrrr");
                     }
-                }));
-    }
-
-    private void queryProjectsLocally() {
-        Realm.getDefaultInstance().where(Project.class).equalTo("active", true).findAllSortedAsync("name").addChangeListener(new RealmChangeListener<RealmResults<Project>>() {
-
-            @Override
-            public void onChange(RealmResults<Project> element) {
-                if (element != null && element.size() > 0) {
-                    Toast.makeText(getActivity(), "success " + element.size(), Toast.LENGTH_LONG).show();
-                    mAdapter.setProjects(element);
-                    mBinding.swipeRefresh.setRefreshing(false);
-
-                } else {
-                    queryProjects();
-                }
-            }
-        });
+                });
     }
 
     // endregion
@@ -126,7 +110,7 @@ public class ProjectsFragment
     @Override
     public void onRefresh() {
         mBinding.swipeRefresh.setRefreshing(true);
-        queryProjects();
+        queryClients();
     }
 
     // endregion
@@ -134,9 +118,15 @@ public class ProjectsFragment
     // region RealmChangeListener<RealmResults<Project>> implementation
 
     @Override
-    public void onChange(Realm realm) {
-        Log.e("Projects", "Realm.onChange triggered");
-        queryProjectsLocally();
+    public void onChange(RealmResults<Client> element) {
+        if (mClients != null && mClients.size() > 0) {
+            mAdapter.setClients(mClients);
+            mBinding.swipeRefresh.setRefreshing(false);
+            Toast.makeText(getActivity(), "adding elements " + mClients.size(), Toast.LENGTH_SHORT).show();
+
+        } else {
+            queryClients();
+        }
     }
 
     // endregion

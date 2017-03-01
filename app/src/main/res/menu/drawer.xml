@@ -9,6 +9,12 @@
             android:title="@string/work_entries" />
 
         <item
+            android:id="@+id/clients"
+            android:checked="false"
+            android:icon="@drawable/ic_add"
+            android:title="@string/clients" />
+
+        <item
             android:id="@+id/projects"
             android:checked="false"
             android:icon="@drawable/ic_add"
@@ -19,5 +25,11 @@
             android:checked="false"
             android:icon="@drawable/ic_add"
             android:title="@string/projects_status" />
+
+        <item
+            android:id="@+id/logout"
+            android:checked="false"
+            android:icon="@drawable/ic_add"
+            android:title="@string/logout" />
     </group>
 </menu>

@@ -3,15 +3,18 @@ package it.spot.android.timespot.storage;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
-import it.spot.android.timespot.domain.Organization;
-import it.spot.android.timespot.domain.Project;
-import it.spot.android.timespot.domain.User;
+import it.spot.android.timespot.api.domain.Client;
+import it.spot.android.timespot.api.domain.Organization;
+import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.api.domain.User;
 
 /**
  * @author a.rinaldi
@@ -42,12 +45,32 @@ public class Storage
     // region IStorage implementation
 
     @Override
+    public void clear() {
+        mPreferences.edit().clear().commit();
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.deleteAll();
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
     public User getLoggedUser() {
         Realm realm = Realm.getDefaultInstance();
         Account account = TimeAuthenticatorHelper.getAccount(mContext);
         User user = realm.where(User.class).equalTo("_id", TimeAuthenticatorHelper.getUserId(mContext, account)).findFirst();
         realm.close();
         return user;
+    }
+
+    @Override
+    public String getLoggedUserId() {
+        Realm realm = Realm.getDefaultInstance();
+        Account account = TimeAuthenticatorHelper.getAccount(mContext);
+        String userId = realm.where(User.class).equalTo("_id", TimeAuthenticatorHelper.getUserId(mContext, account)).findFirst().get_id();
+        realm.close();
+        return userId;
     }
 
     @Override
@@ -123,12 +146,42 @@ public class Storage
 
     @Override
     public void setProjects(final List<Project> projects) {
+        Log.e("Projects", "setProjects1");
         Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
 
             @Override
             public void execute(Realm realm) {
+                Log.e("Projects", "setProjects2");
                 realm.where(Project.class).findAll().deleteAllFromRealm();
                 realm.copyToRealm(projects);
+            }
+        });
+    }
+
+    @Override
+    public List<Client> getClients() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Client> clients = realm.where(Client.class).findAll();
+        realm.close();
+        return clients;
+    }
+
+    @Override
+    public Client getClient(String id) {
+        Realm realm = Realm.getDefaultInstance();
+        Client client = realm.where(Client.class).equalTo("_id", id).findFirst();
+        realm.close();
+        return client;
+    }
+
+    @Override
+    public void setClients(final List<Client> clients) {
+        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Client.class).findAll().deleteAllFromRealm();
+                realm.copyToRealm(clients);
             }
         });
     }
