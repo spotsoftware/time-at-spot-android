@@ -21,6 +21,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
 import java.util.Calendar;
 
 import it.spot.android.timespot.R;
@@ -42,9 +44,10 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntryNewActivity
-        extends AppCompatActivity {
+        extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
     private ActivityWorkEntryNewBinding mBinding;
+    private Calendar mDate = Calendar.getInstance();
 
     // region Activity life cycle
 
@@ -171,6 +174,21 @@ public class WorkEntryNewActivity
                 mBinding.editDescription.setMovementMethod(new ScrollingMovementMethod());
             }
         });
+
+        mBinding.editDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        WorkEntryNewActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.setVersion(DatePickerDialog.Version.VERSION_2);
+                dpd.show(getFragmentManager(), "Datepickerdialog");
+            }
+        });
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -190,7 +208,7 @@ public class WorkEntryNewActivity
                 .set_project("57a2f1a20e3c530f006f49a3")
                 .setDescription(mBinding.editDescription.getText().toString())
                 .setAmount(Float.valueOf(mBinding.editTime.getText().toString()))
-                .setPerformedAt(Utils.Date.formatDateInServerFormat(Calendar.getInstance()));
+                .setPerformedAt(Utils.Date.formatDateInServerFormat(mDate));
 
         TimeEndpoint.getInstance(this)
                 .create(WorkEntryService.class)
@@ -214,5 +232,23 @@ public class WorkEntryNewActivity
                 });
     }
 
+    // endregion
+
+    // region implementation
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        String date = ""+dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
+        mBinding.editDate.setText(date);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, monthOfYear);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        mDate = cal;
+    }
     // endregion
 }
