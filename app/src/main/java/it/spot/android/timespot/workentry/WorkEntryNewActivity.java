@@ -44,7 +44,7 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntryNewActivity
-        extends BaseActivity {
+        extends BaseActivity implements DatePickerDialog.OnDateSetListener {
 
     public static final int NEW_WORK_ENTRY_REQUEST_CODE = 123;
 
