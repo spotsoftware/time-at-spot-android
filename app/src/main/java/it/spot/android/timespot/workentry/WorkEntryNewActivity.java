@@ -1,12 +1,15 @@
 package it.spot.android.timespot.workentry;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.method.ScrollingMovementMethod;
@@ -18,15 +21,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
+import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import it.spot.android.timespot.R;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
+import it.spot.android.timespot.api.domain.Project;
 import it.spot.android.timespot.api.request.WorkEntryNewRequest;
 import it.spot.android.timespot.api.response.WorkEntryNewResponse;
 import it.spot.android.timespot.core.BaseActivity;
@@ -44,12 +54,16 @@ import retrofit2.Response;
  * @author a.rinaldi
  */
 public class WorkEntryNewActivity
-        extends BaseActivity implements DatePickerDialog.OnDateSetListener {
+        extends BaseActivity
+        implements DatePickerDialog.OnDateSetListener {
 
     public static final int NEW_WORK_ENTRY_REQUEST_CODE = 123;
 
     private ActivityWorkEntryNewBinding mBinding;
     private Calendar mDate = Calendar.getInstance();
+
+    private
+    private RealmResults<Project> mProjects;
 
     // region Activity life cycle
 
@@ -57,6 +71,15 @@ public class WorkEntryNewActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_work_entry_new);
+
+        mProjects = Realm.getDefaultInstance().where(Project.class).equalTo("active", true).findAllAsync();
+        mProjects.addChangeListener(new RealmChangeListener<RealmResults<Project>>() {
+
+            @Override
+            public void onChange(RealmResults<Project> element) {
+                mBinding.autoCompleteProject.setAdapter(new ());
+            }
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupEnterAnimation();
@@ -241,10 +264,11 @@ public class WorkEntryNewActivity
 
     // endregion
 
-    // region implementation
+    // region DatePickerDialog.OnDateSetListener implementation
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = ""+dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
+        String date = "" + dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
         mBinding.editDate.setText(date);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
@@ -257,5 +281,57 @@ public class WorkEntryNewActivity
 
         mDate = cal;
     }
+
     // endregion
+
+    private static class ProjectsAdapter
+            extends ArrayAdapter<Project> {
+
+        // region Construction
+
+        public ProjectsAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Project> objects) {
+            super(context, resource, objects);
+        }
+
+        // endregion
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+            return super.getFilter();
+        }
+
+        private Filter mFilter = new Filter() {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                if(constraint != null) {
+                    suggestions.clear();
+                    for (Customer customer : itemsAll) {
+                        if(customer.getName().toLowerCase().startsWith(constraint.toString().toLowerCase())){
+                            suggestions.add(customer);
+                        }
+                    }
+                    FilterResults filterResults = new FilterResults();
+                    filterResults.values = suggestions;
+                    filterResults.count = suggestions.size();
+                    return filterResults;
+                } else {
+                    return new FilterResults();
+                }
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                List<Project> filteredList = (List<Project>) results.values;
+                if (results != null && results.count > 0) {
+                    clear();
+                    for (Project c : filteredList) {
+                        add(c);
+                    }
+                    notifyDataSetChanged();
+                }
+            }
+        };
+    }
 }

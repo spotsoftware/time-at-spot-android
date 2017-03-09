@@ -68,8 +68,8 @@
                 android:layout_height="wrap_content"
                 app:hintAnimationEnabled="true">
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/edit_project"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/auto_complete_project"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/what_project"
