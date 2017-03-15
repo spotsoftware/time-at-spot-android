@@ -5,6 +5,11 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.GsonBuilder;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
+
 import java.io.IOException;
 
 import it.spot.android.timespot.R;
@@ -58,8 +63,26 @@ public class TimeEndpoint {
 
         return new Retrofit.Builder()
                 .baseUrl(context.getString(R.string.api_url))
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
+                        .setExclusionStrategies(new ExclusionStrategy[]{new DBFlowExclusionStrategy()})
+                        .create()))
                 .client(httpClient)
                 .build();
+    }
+
+    private static class DBFlowExclusionStrategy
+            implements ExclusionStrategy {
+
+        // Otherwise, Gson will go through base classes of DBFlow models
+        // and hang forever.
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+            return f.getDeclaredClass().equals(ModelAdapter.class);
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
     }
 }

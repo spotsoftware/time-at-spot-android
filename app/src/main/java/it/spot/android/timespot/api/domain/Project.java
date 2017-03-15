@@ -3,25 +3,33 @@ package it.spot.android.timespot.api.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-/**
- * @author a.rinaldi
- */
+import it.spot.android.timespot.storage.Storage;
+
+@Table(database = Storage.class)
 public class Project
-        extends RealmObject
+        extends BaseModel
         implements Parcelable {
 
     @PrimaryKey
     private String _id;
-//    private String _client;
+    //    private String _client;
 //    private String _organization;
+    @Column
     private String name;
+    @Column
     private float amount;
+    @Column
     private String icon;
+    @Column
     private String initials;
+    @Column
     private String group;
+    @Column
     private boolean active;
 
     // region Construction
@@ -118,7 +126,7 @@ public class Project
         return this;
     }
 
-    public boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 

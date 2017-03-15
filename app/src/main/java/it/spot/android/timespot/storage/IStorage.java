@@ -32,6 +32,8 @@ public interface IStorage {
 
     List<Client> getClients();
 
+    List<Client> getActiveClients();
+
     Client getClient(String id);
 
     void setClients(List<Client> clients);

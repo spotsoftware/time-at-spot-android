@@ -3,15 +3,21 @@ package it.spot.android.timespot.api.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import io.realm.RealmObject;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-/**
- * @author a.rinaldi
- */
+import it.spot.android.timespot.storage.Storage;
+
+@Table(database = Storage.class)
 public class UserSettings
-        extends RealmObject
+        extends BaseModel
         implements Parcelable {
 
+    @PrimaryKey(autoincrement = true)
+    private long id;
+    @Column
     private String defaultOrganization;
 
     // region Construction
@@ -21,12 +27,21 @@ public class UserSettings
     }
 
     protected UserSettings(Parcel in) {
+        id = in.readLong();
         defaultOrganization = in.readString();
     }
 
     // endregion
 
     // region Public methods
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getDefaultOrganization() {
         return defaultOrganization;
@@ -48,6 +63,7 @@ public class UserSettings
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
         dest.writeString(defaultOrganization);
     }
 

@@ -16,23 +16,25 @@ import android.text.method.ScrollingMovementMethod;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 import it.spot.android.timespot.R;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.WorkEntryService;
@@ -62,8 +64,7 @@ public class WorkEntryNewActivity
     private ActivityWorkEntryNewBinding mBinding;
     private Calendar mDate = Calendar.getInstance();
 
-    private
-    private RealmResults<Project> mProjects;
+    private ProjectsAdapter mAutoCompleteAdapter;
 
     // region Activity life cycle
 
@@ -72,14 +73,9 @@ public class WorkEntryNewActivity
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_work_entry_new);
 
-        mProjects = Realm.getDefaultInstance().where(Project.class).equalTo("active", true).findAllAsync();
-        mProjects.addChangeListener(new RealmChangeListener<RealmResults<Project>>() {
-
-            @Override
-            public void onChange(RealmResults<Project> element) {
-                mBinding.autoCompleteProject.setAdapter(new ());
-            }
-        });
+        mAutoCompleteAdapter = new ProjectsAdapter(WorkEntryNewActivity.this, R.layout.list_item_project_auto_complete, new ArrayList<Project>());
+        mBinding.autoCompleteProject.setThreshold(1);
+        mBinding.autoCompleteProject.setAdapter(mAutoCompleteAdapter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupEnterAnimation();
@@ -143,8 +139,7 @@ public class WorkEntryNewActivity
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setupEnterAnimation() {
-        Transition transition = TransitionInflater.from(this)
-                .inflateTransition(R.transition.changebounds_with_arcmotion);
+        Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.changebounds_with_arcmotion);
         getWindow().setSharedElementEnterTransition(transition);
         transition.addListener(new Transition.TransitionListener() {
             @Override
@@ -287,35 +282,55 @@ public class WorkEntryNewActivity
     private static class ProjectsAdapter
             extends ArrayAdapter<Project> {
 
+        private ArrayList<Project> items;
+        private int viewResourceId;
+        private LayoutInflater mInflater;
+
         // region Construction
 
-        public ProjectsAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Project> objects) {
+        public ProjectsAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Project> objects) {
             super(context, resource, objects);
+            mInflater = LayoutInflater.from(context);
+            items = objects;
+            viewResourceId = resource;
         }
 
         // endregion
 
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            if (convertView == null) {
+                convertView = mInflater.inflate(viewResourceId, null);
+            }
+
+            Project project = items.get(position);
+            ((TextView) convertView.findViewById(R.id.name)).setText(project.getName());
+
+            return convertView;
+        }
+
         @NonNull
         @Override
         public Filter getFilter() {
-            return super.getFilter();
+            return mFilter;
         }
 
         private Filter mFilter = new Filter() {
 
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                if(constraint != null) {
-                    suggestions.clear();
-                    for (Customer customer : itemsAll) {
-                        if(customer.getName().toLowerCase().startsWith(constraint.toString().toLowerCase())){
-                            suggestions.add(customer);
-                        }
-                    }
+                if (constraint != null) {
+                    items.clear();
+//                    RealmResults filteredItems =
+//                            Realm.getDefaultInstance().where(Project.class).contains("name", String.valueOf(constraint)).equalTo("active", true).findAll();
+//                    items.addAll(filteredItems);
+
                     FilterResults filterResults = new FilterResults();
-                    filterResults.values = suggestions;
-                    filterResults.count = suggestions.size();
+                    filterResults.values = Arrays.asList((Project[]) items.toArray());
+                    filterResults.count = items.size();
                     return filterResults;
+
                 } else {
                     return new FilterResults();
                 }

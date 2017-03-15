@@ -8,13 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 import it.spot.android.timespot.api.ClientService;
 import it.spot.android.timespot.api.TimeEndpoint;
 import it.spot.android.timespot.api.domain.Client;
@@ -30,10 +27,10 @@ import retrofit2.Response;
  */
 public class ClientsFragment
         extends BaseFragment
-        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RealmChangeListener<RealmResults<Client>> {
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private ClientsAdapter mAdapter;
-    private RealmResults<Client> mClients;
+    private ArrayList<Client> mClients;
     private FragmentClientsBinding mBinding;
 
     // region Fragment life cycle
@@ -53,10 +50,10 @@ public class ClientsFragment
 
         mBinding.addButton.setTransitionName("reveal");
 
-        mClients = Realm.getDefaultInstance().where(Client.class)
-                .equalTo("active", true)
-                .findAllSortedAsync("name");
-        mClients.addChangeListener(this);
+//        mClients = Realm.getDefaultInstance().where(Client.class)
+//                .equalTo("active", true)
+//                .findAllSortedAsync("name");
+//        mClients.addChangeListener(this);
 
         return mBinding.getRoot();
     }
@@ -117,17 +114,17 @@ public class ClientsFragment
 
     // region RealmChangeListener<RealmResults<Project>> implementation
 
-    @Override
-    public void onChange(RealmResults<Client> element) {
-        if (mClients != null && mClients.size() > 0) {
-            mAdapter.setClients(mClients);
-            mBinding.swipeRefresh.setRefreshing(false);
-            Toast.makeText(getActivity(), "adding elements " + mClients.size(), Toast.LENGTH_SHORT).show();
-
-        } else {
-            queryClients();
-        }
-    }
+//    @Override
+//    public void onChange(RealmResults<Client> element) {
+//        if (mClients != null && mClients.size() > 0) {
+//            mAdapter.setClients(mClients);
+//            mBinding.swipeRefresh.setRefreshing(false);
+//            Toast.makeText(getActivity(), "adding elements " + mClients.size(), Toast.LENGTH_SHORT).show();
+//
+//        } else {
+//            queryClients();
+//        }
+//    }
 
     // endregion
 }

@@ -3,24 +3,35 @@ package it.spot.android.timespot.storage;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+
+import com.raizlabs.android.dbflow.annotation.Database;
+import com.raizlabs.android.dbflow.config.DatabaseDefinition;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
+import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction;
+import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
+import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
-import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 import it.spot.android.timespot.api.domain.Client;
+import it.spot.android.timespot.api.domain.Client_Table;
 import it.spot.android.timespot.api.domain.Organization;
+import it.spot.android.timespot.api.domain.Organization_Table;
 import it.spot.android.timespot.api.domain.Project;
+import it.spot.android.timespot.api.domain.Project_Table;
 import it.spot.android.timespot.api.domain.User;
+import it.spot.android.timespot.api.domain.User_Table;
+import it.spot.android.timespot.auth.TimeAuthenticatorHelper;
 
-/**
- * @author a.rinaldi
- */
+@Database(name = Storage.NAME, version = Storage.VERSION,
+        consistencyCheckEnabled = true, foreignKeyConstraintsEnforced = true)
 public class Storage
         implements IStorage {
+
+    public static final String NAME = "TimeAtSpotDb";
+    public static final int VERSION = 1;
 
     private static final String PREFERENCES_NAME = "time_at_spot_preferences";
     private static final String PREFERENCES_ORGANIZATION_ID = "preferences_organization_id";
@@ -48,38 +59,42 @@ public class Storage
     public void clear() {
         mPreferences.edit().clear().commit();
 
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
-        realm.close();
+//        Delete.
+//                Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        realm.deleteAll();
+//        realm.commitTransaction();
+//        realm.close();
     }
 
     @Override
     public User getLoggedUser() {
-        Realm realm = Realm.getDefaultInstance();
         Account account = TimeAuthenticatorHelper.getAccount(mContext);
-        User user = realm.where(User.class).equalTo("_id", TimeAuthenticatorHelper.getUserId(mContext, account)).findFirst();
-        realm.close();
-        return user;
+        return SQLite.select()
+                .from(User.class)
+                .where(User_Table._id.is(TimeAuthenticatorHelper.getUserId(mContext, account)))
+                .querySingle();
     }
 
     @Override
     public String getLoggedUserId() {
-        Realm realm = Realm.getDefaultInstance();
-        Account account = TimeAuthenticatorHelper.getAccount(mContext);
-        String userId = realm.where(User.class).equalTo("_id", TimeAuthenticatorHelper.getUserId(mContext, account)).findFirst().get_id();
-        realm.close();
-        return userId;
+        User user = getLoggedUser();
+        if (user != null) {
+            return user.get_id();
+
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public void setLoggedUser(User user) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(user);
-        realm.commitTransaction();
-        realm.close();
+    public void setLoggedUser(final User user) {
+        FlowManager.getDatabase(Storage.class).executeTransaction(new ITransaction() {
+            @Override
+            public void execute(DatabaseWrapper databaseWrapper) {
+                user.save(databaseWrapper);
+            }
+        });
     }
 
     @Override
@@ -94,96 +109,91 @@ public class Storage
 
     @Override
     public List<Organization> getOrganizations() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Organization> organizations = realm.where(Organization.class).findAll();
-        realm.close();
-        return organizations;
+        return SQLite.select()
+                .from(Organization.class)
+                .where(Organization_Table.active.is(true))
+                .queryList();
     }
 
     @Override
     public Organization getOrganizationById(String id) {
-        Realm realm = Realm.getDefaultInstance();
-        Organization organization = realm.where(Organization.class).equalTo("_id", id).findFirst();
-        realm.close();
-        return organization;
+        return SQLite.select()
+                .from(Organization.class)
+                .where(Organization_Table._id.is(id))
+                .querySingle();
     }
 
     @Override
     public void setOrganizations(final List<Organization> organizations) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
-
-            @Override
-            public void execute(Realm realm) {
-                realm.where(Organization.class).findAll().deleteAllFromRealm();
-                realm.copyToRealm(organizations);
-            }
-        });
+        DatabaseDefinition database = FlowManager.getDatabase(Storage.class);
+        Transaction transaction = database.beginTransactionAsync(FastStoreModelTransaction
+                .updateBuilder(FlowManager.getModelAdapter(Organization.class))
+                .addAll(organizations).build()).build();
+        transaction.execute();
     }
 
     @Override
     public List<Project> getProjects() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Project> projects = realm.where(Project.class).findAll();
-        realm.close();
-        return projects;
+        return SQLite.select()
+                .from(Project.class)
+                .queryList();
     }
 
     @Override
     public List<Project> getActiveProjects() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Project> projects = realm.where(Project.class).equalTo("active", true).findAll();
-        realm.close();
-        return projects;
+        return SQLite.select()
+                .from(Project.class)
+                .where(Project_Table.active.is(true))
+                .queryList();
     }
 
     @Override
     public Project getProject(String id) {
-        Realm realm = Realm.getDefaultInstance();
-        Project project = realm.where(Project.class).equalTo("_id", id).findFirst();
-        realm.close();
-        return project;
+        return SQLite.select()
+                .from(Project.class)
+                .where(Project_Table._id.is(id))
+                .querySingle();
     }
 
     @Override
     public void setProjects(final List<Project> projects) {
-        Log.e("Projects", "setProjects1");
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
-
-            @Override
-            public void execute(Realm realm) {
-                Log.e("Projects", "setProjects2");
-                realm.where(Project.class).findAll().deleteAllFromRealm();
-                realm.copyToRealm(projects);
-            }
-        });
+        DatabaseDefinition database = FlowManager.getDatabase(Storage.class);
+        Transaction transaction = database.beginTransactionAsync(FastStoreModelTransaction
+                .updateBuilder(FlowManager.getModelAdapter(Project.class))
+                .addAll(projects).build()).build();
+        transaction.execute();
     }
 
     @Override
     public List<Client> getClients() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Client> clients = realm.where(Client.class).findAll();
-        realm.close();
-        return clients;
+        return SQLite.select()
+                .from(Client.class)
+                .queryList();
+    }
+
+    @Override
+    public List<Client> getActiveClients() {
+        return SQLite.select()
+                .from(Client.class)
+                .where(Client_Table.active.is(true))
+                .queryList();
     }
 
     @Override
     public Client getClient(String id) {
-        Realm realm = Realm.getDefaultInstance();
-        Client client = realm.where(Client.class).equalTo("_id", id).findFirst();
-        realm.close();
-        return client;
+        return SQLite.select()
+                .from(Client.class)
+                .where(Client_Table._id.is(id))
+                .querySingle();
     }
 
     @Override
     public void setClients(final List<Client> clients) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
-
-            @Override
-            public void execute(Realm realm) {
-                realm.where(Client.class).findAll().deleteAllFromRealm();
-                realm.copyToRealm(clients);
-            }
-        });
+        DatabaseDefinition database = FlowManager.getDatabase(Storage.class);
+        Transaction transaction = database.beginTransactionAsync(FastStoreModelTransaction
+                .updateBuilder(FlowManager.getModelAdapter(Client.class))
+                .addAll(clients).build()).build();
+        transaction.execute();
     }
 
     // endregion
